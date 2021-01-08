@@ -1,0 +1,193 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+.modal-open {
+    padding-right: 0px !important;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+    color: rgb(8, 21, 34);
+    text-decoration: none;
+}
+
+a:hover {
+    color: rgb(26, 75, 124);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+navbar-customIcon{
+    color: rgb(255, 255, 255) !important;
+    cursor: pointer;
+}
+
+navbar-customIcon:hover {
+    color: rgb(255, 255, 255) !important;
+    cursor: pointer;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.mw-450 {
+    max-width: 450px;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    font-size: 14px;
+    overflow-y: scroll;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+.border-gray {
+    border-color: rgb(196,196,196) !important;
+}
+
+.gradient-top {
+    height: 1px;
+    width: 100%
+    background-image: -webkit-gradient(linear, 0 0, 100% 0, from(#000), to(transparent));
+    background-image: -webkit-linear-gradient(left, #000, transparent);
+    background-image: -moz-linear-gradient(left, #000, transparent);
+    background-image: -o-linear-gradient(left, #000, transparent);
+}
+
+.btn-has-text {
+    margin-right: 10px;
+}
+
+.border-tab {
+    border-right: 0 !important;
+}
+
+@media only screen and (max-width: 780px) {
+    .border-tab {
+        border-right: 1px solid black !important;
+    }
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text there */
+}
+
+.bg-color1 {
+    background-color: rgb(15, 54, 91);
+}
+
+.disable {
+    display: none;
+    visibility: hidden;
+}
+
+.f14 {
+    font-size: 14px;
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="time"]:focus,
+input[type="week"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="color"]:focus,
+.uneditable-input:focus {
+    border-color: rgb(203, 203, 203);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgb(203, 203, 203);
+    outline: 0 none;
+}
+
+.error {
+    font-size: 12px;
+    color: rgb(195, 41, 41);
+    text-align: left;
+    font-weight: bolder;
+}
+
+.light {
+    color: #212529;
+    background-color: #f8f9fa;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.light:focus {
+    outline: 0;
+}

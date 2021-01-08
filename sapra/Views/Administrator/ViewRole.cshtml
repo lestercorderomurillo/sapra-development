@@ -1,0 +1,37 @@
+﻿@model Role
+@{
+	Role parentRole = new sapra.Controllers.AdministratorController().RequestRole(Model.ParentRoleId, true);
+}
+
+<h4>Consultar información sobre un Rol</h4><br>
+<div class="form-group">
+
+	<label class="font-weight-bolder">Nombre del Rol:</label><br>
+	<label>@Model.Name</label><br><br>
+	<label class="font-weight-bolder">Descripción:</label><br>
+	<label>@Model.Description</label><br><br>
+		
+	@if (parentRole == null)
+	{
+		<label class="font-weight-bolder">No hereda permisos de ningún rol</label><br><br>
+	}
+	else 
+	{	
+		<label class="font-weight-bolder">Heredará permisos de:</label><br>
+		<label>@parentRole.Name</label><br><br>
+	}
+
+	<label class="font-weight-bolder">Permisos acumulados para este rol:</label><br>
+	@foreach(var permission in Model.Permissions) 
+	{
+		<div style="display: inline-block;" class="alert-dark small text-uppercase rounded p-2 m-1">@permission</div>
+	}
+
+	<br><br>
+	<button class="btn btn-primary bg-color1 rounded-0" 
+	onclick="setTab('Roles');">
+		<i class="btn-has-text fa fa-step-backward"></i>
+		Regresar
+	</button>
+
+</div>

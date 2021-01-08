@@ -1,0 +1,121 @@
+﻿@model sapra.ViewModels.UserListViewModel
+<h4>Módulo de Usuarios</h4><br>
+<div class="">
+	<button type="button" onclick="AddUser()" class="btn btn-primary bg-color1 rounded-0 mb-4">
+		<i class="btn-has-text fa fa-user"></i>
+		Registrar nuevo usuario en el sistema
+	</button>
+	<partial name="~/Views/Shared/Response.cshtml" for="Response">
+	<h5 class="pt-2">Busqueda de usuarios existentes en el sistema </h5><br>
+	<div class="row">
+		<div class="col-8 col-sm-8 col-md-6 col-lg-6">
+			<input placeholder="Filtrar por nombre..." asp-for="SearchQuery" value="@Model.SearchQuery" class="form-control border-dark">
+		</div>
+		<div class="col-4">
+		<button type="submit" class="btn btn-primary bg-color1 rounded-0">
+			<i class="fa fa-search"></i>
+				Buscar
+			</button>
+		</div>
+	</div>
+	<br>
+	<table class="w-100 table">
+		<tr>
+			<th>Nombre completo</th>
+			<th>Email</th>
+			<th>Acción</th>
+		</tr>
+		@foreach(User user in Model.Users)
+		{
+			<tr>
+				<td>
+					@user.UserInfo.FirstName @user.UserInfo.LastName
+				</td>
+				<td>
+					@user.UserInfo.Email
+				</td>
+				<td width="155px">
+					<button onclick="ViewUser(@user.UserId);" class="btn btn-primary bg-color1 rounded-0">
+						<i class="fa fa-search"></i>
+					</button>
+					<button onclick="EditUser(@user.UserId)" class="btn btn-primary bg-color1 rounded-0">
+						<i class="fa fa-edit"></i>
+					</button>
+					<button onclick="DeleteUser(@user.UserId)" class="btn btn-danger rounded-0">
+						<i class="fa fa-remove"></i>
+					</button>
+				</td>
+			</tr>
+		}
+	</table>
+</div>
+<script>
+
+	var _userId = 0;
+
+	function AddUser() {
+		$.ajax({
+			type: "post",
+			url: "EditUser",
+			data: { "userId" : 0 },
+			success: function (response) {
+				$("#currentTab").html(response);
+			},
+		});
+	}
+
+	function ViewUser(userId) {
+		$.ajax({
+			type: "post",
+			url: "AdminUserView",
+			data: { "userId" : userId },
+			success: function (response) {
+				$("#currentTab").html(response);
+			},
+		});
+	}
+
+	function EditUser(userId) {
+		$.ajax({
+			type: "post",
+			url: "EditUser",
+			data: {"userId": userId},
+			success: function (response) {
+				$("#currentTab").html(response);
+			},
+		});
+	}
+
+	function DeleteUser(userId) {
+		_userId = userId;
+		$('#on-delete-modal').modal('toggle');
+	}
+
+	function DeleteUserPostConfirm() {
+		$('#on-delete-modal').modal('hide');
+		setTimeout(function(){
+			$.ajax({
+				type: "post",
+				url: "AdminUserDelete",
+				data: {"userId": _userId},
+				success: function (response) {
+					$("#currentTab").html(response);
+				},
+			});
+		}, 1000);
+	}
+</script>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="on-delete-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="modal-title">¿Está seguro que quiere eliminar este usuario?</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="DeleteUserPostConfirm();" type="button" class="btn btn-danger rounded-0">Eliminar</button>
+        <button onclick="$('#on-delete-modal').modal('toggle');" type="button" class="btn btn-primary bg-color1 rounded-0">Conservar</button>
+      </div>
+    </div>
+  </div>
+</div>

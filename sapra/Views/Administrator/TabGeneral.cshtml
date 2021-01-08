@@ -1,0 +1,47 @@
+﻿@model sapra.ViewModels.GeneralSettingsModel
+<h4 class="mb-4">Configuración General</h4>
+<partial name="~/Views/Shared/Response.cshtml" for="Response">
+<form method="post" asp-action="SubmitSettingsUpdate" asp-controller="Administrator" id="formGeneral" class="form-group">
+	<label>Título del Sistema:</label><br>
+	<input asp-for="Title" type="text" class="form-control border-dark mw-450" value="@Model.Title"><br>
+	<label>Subtítulo del Sistema:</label><br>
+	<input asp-for="Subtitle" type="text" class="form-control border-dark mw-450" value="@Model.Subtitle"><br>
+	<label>Dirección URL de ArcGIS Server:</label><br>
+	<input asp-for="ArcGISURL" type="text" class="form-control border-dark mw-450" value="@Model.ArcGISURL"><br>
+
+	<button type="submit" class="btn btn-primary bg-color1 rounded-0">
+		<i class="btn-has-text fa fa-save"></i>
+		Guardar Cambios
+	</button>
+</form>
+
+<script>
+	$(function() {
+		$("#formGeneral").validate({
+			rules: {
+				Title: {
+					required: true,
+					minlength: 8,
+					maxlength: 64
+				},
+				Subtitle: {
+					required: true,
+					minlength: 8,
+					maxlength: 64
+				},
+				ArcGISURL: {
+					required: true,
+					url: true
+				}
+			},
+		messages: {
+			Title: "Debe tener entre 8 y 64 letras.",
+			Subtitle: "Debe tener entre 8 y 64 letras.",
+			ArcGISURL: "Debe ser una URL válida."
+		},
+		submitHandler: function(form) {
+			form.submit();
+		}
+	  });
+	});
+</script>

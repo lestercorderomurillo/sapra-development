@@ -1,0 +1,96 @@
+﻿@model Role
+@if(Model.RoleId == 0) 
+{
+	<h4>Agregar un Rol Nuevo</h4><br>
+}
+else 
+{
+	<h4>Editar un Rol</h4><br>
+}
+<form id="formRoleEdit" method="post" asp-action="SubmitRoleUpdate" asp-controller="Administrator" class="form-group">
+	<input type="hidden" asp-for="RoleId" value="@Model.RoleId">
+	<label>Nombre del Rol:</label><br>
+	<input asp-for="Name" type="text" class="form-control border-dark mw-450" value="@Model.Name"><br>
+	<label>Descripción:</label><br>
+	<input asp-for="Description" type="text" class="form-control border-dark mw-450" value="@Model.Description"><br>
+	<label>Heredar permisos de:</label><br>
+	<select asp-for="ParentRoleId" class="form-control border-dark mw-450" type="text">
+		<option value="0">No heredar</option>
+		@foreach(Role role in ViewBag.Roles)
+		{
+			if(Model.ParentRoleId == role.RoleId)
+			{
+				<option selected="selected" value="@role.RoleId">@role.Name</option>
+			}
+			else
+			{
+				<option value="@role.RoleId">@role.Name</option>
+			}
+		}
+	</select><br>
+	<label>Permisos para este rol:</label><br>
+	<select asp-for="Permissions" data-width="100%" class="selectpicker form-control border border-dark mw-450" multiple="multiple" style="max-width:1000px; min-width:100%;" data-actions-box="true" title="Seleccione"
+		data-selected-text-format="count" data-count-selected-text="{0} permisos seleccionados">
+		@{ var counter = 0; }
+		@foreach(string permission in ViewBag.Permissions)
+		{ 
+			if(ViewBag.Selected[counter])
+			{
+				<option selected="selected" value="@permission">@permission</option>
+			}
+			else
+			{
+				<option value="@permission">@permission</option>
+			}
+			counter++;
+		}				
+	</select>
+	<label for="Permissions" generated="true" class="error"></label>
+	<br><br>
+	<button type="button" onclick="setTab('Roles');" class="btn btn-primary bg-color1 rounded-0">
+		<i class="btn-has-text fa fa-step-backward"></i>
+		Abortar
+	</button>
+
+	<button type="submit" class="btn btn-primary bg-color1 rounded-0">
+		<i class="btn-has-text fa fa-save"></i>
+		@{ var text = (Model.RoleId == 0) ? "Insertar Rol" : "Guardar Cambios"; }
+		@text
+	</button>
+
+</form>
+<script>
+	$(document).ready(function () {
+		$('.selectpicker').selectpicker();
+		$('.bs-select-all').html('Seleccionar todo');
+		$('.bs-deselect-all').html('Deseleccionar todo');
+	});
+
+	$(function() {
+		$("#formRoleEdit").validate({
+			rules: {
+				Name: {
+					required: true,
+					minlength: 4,
+					maxlength: 24
+				},
+				Description: {
+					required: true,
+					minlength: 4,
+					maxlength: 64
+				},
+				Permissions: {
+					required: true
+				}
+			},
+		messages: {
+			Name: "Debe tener entre 4 y 24 letras.",
+			Description: "Debe tener entre 4 y 32 letras.",
+			Permissions: "Debe seleccionar al menos un permiso."
+		},
+		submitHandler: function(form) {
+			form.submit();
+		}
+	  });
+	});
+</script>

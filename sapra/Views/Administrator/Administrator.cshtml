@@ -1,0 +1,55 @@
+﻿@{
+	ViewData["Title"] = "Administración";
+}
+<script>
+	displayLayout();
+</script>
+<div class="text-center">
+	<br>
+	<div class="row no-gutters">
+		<div class="col col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3 text-uppercase">
+			<button id="General" class="tab light border border-gray w-100 p-3 rounded-left" onclick="setTab('General');">
+				<div class="text-left font-weight-bold">General</div>
+				<div class="text-left small">Permite realizar ajustes generales</div>
+			</button>
+			<button id="Roles" class="tab light border border-gray w-100 p-3 rounded-left" onclick="setTab('Roles');">
+				<div class="text-left font-weight-bold">Roles</div>
+				<div class="text-left small">Permite administrar roles y permisos</div>
+			</button>
+			<button id="Users" class="tab light border border-gray w-100 p-3 rounded-left" onclick="setTab('Users');">
+				<div class="text-left font-weight-bold">Usuarios</div>
+				<div class="text-left small">Permite administrar usuarios y su información</div>
+			</button>
+			<button id="Zone" class="tab light border border-gray w-100 p-3 rounded-left mb-2" onclick="setTab('Zone');">
+				<div class="text-left font-weight-bold">Zonificación</div>
+				<div class="text-left small">Permite administrar capas del sistema de zonificación</div>
+			</button>
+		</div>
+		<div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
+			<div class="gradient-top"></div>
+			<div class="text-left  p-4 pl-5" id="currentTab">
+			</div>
+		</div>
+	</div>
+	
+</div>
+<script>
+
+	$(document).ready(function () {
+		setTab('@ViewBag.Tab');
+	});
+
+	function setTab(tabName) {
+		ajax("Tab" + tabName, "#currentTab");
+
+		$('.tab').removeClass("border-tab");
+		$('.tab').removeClass("border-gray");
+		$('.tab').removeClass("border-dark");
+
+		$('#' + tabName).addClass("border-dark");
+		$('.tab:not(".border-dark")').addClass("border-gray");
+		$('#' + tabName).addClass("border-tab");
+
+	}
+
+</script>

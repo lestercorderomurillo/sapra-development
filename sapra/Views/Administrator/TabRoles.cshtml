@@ -1,0 +1,119 @@
+﻿@model sapra.ViewModels.RoleListViewModel
+<h4>Módulo de Roles</h4><br>
+<div>
+	<button onclick="AddRole()" class="btn btn-primary bg-color1 rounded-0 mb-4">
+		<i class="btn-has-text fa fa-address-book"></i>
+		Registrar nuevo rol en el sistema
+	</button>
+	<partial name="~/Views/Shared/Response.cshtml" for="Response">
+	<h5 class="pt-3">Roles existentes en el sistema </h5><br>
+	<table class="w-100 table">
+		<tr>
+			<th>Nombre</th>
+			<th>Descripción</th>
+			<th>Acción</th>
+		</tr>
+		@{ var allow = false;}
+		@foreach(Role role in Model.Roles)
+		{
+			<tr>
+				<td>
+					@role.Name
+				</td>
+				<td>
+					@role.Description
+				</td>
+				<td width="155px">
+					<button onclick="ViewRole(@role.RoleId);" class="btn btn-primary bg-color1 rounded-0">
+						<i class="fa fa-search"></i>
+					</button>
+					<button onclick="EditRole(@role.RoleId)" class="btn btn-primary bg-color1 rounded-0">
+						<i class="fa fa-edit"></i>
+					</button>
+					@if(allow)
+					{
+						<button onclick="DeleteRole(@role.RoleId)" class="btn btn-danger rounded-0">
+							<i class="fa fa-remove"></i>
+						</button>
+					}
+					else
+					{ 
+						allow = true;
+					}
+				</td>
+			</tr>
+		}
+	</table>
+</div>
+<script>
+
+	var _roleId = 0;
+
+	function AddRole() {
+		$.ajax({
+			type: "post",
+			url: "EditRole",
+			dataType: "html",
+			contentType: "application/json",
+			data: { "roleId" : 0 },
+			success: function (response) {
+				$("#currentTab").html(response);
+			},
+		});
+	}
+
+	function ViewRole(roleId) {
+		$.ajax({
+			type: "post",
+			url: "ViewRole",
+			data: {"roleId": roleId, "includePermissions": true },
+			success: function (response) {
+				$("#currentTab").html(response);
+			},
+		});
+	}
+
+	function EditRole(roleId) {
+		$.ajax({
+			type: "post",
+			url: "EditRole",
+			data: {"roleId": roleId},
+			success: function (response) {
+				$("#currentTab").html(response);
+			},
+		});
+	}
+
+	function DeleteRole(roleId) {
+		_roleId = roleId;
+		$('#on-delete-modal').modal('toggle');
+	}
+
+	function DeleteRolePostConfirm() {
+		$('#on-delete-modal').modal('hide');
+		setTimeout(function(){
+			$.ajax({
+				type: "post",
+				url: "DeleteRole",
+				data: {"roleId": _roleId},
+				success: function (response) {
+					$("#currentTab").html(response);
+				},
+			});
+		}, 1000);
+	}
+</script>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="on-delete-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="modal-title">¿Está seguro que quiere eliminar ese rol?</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="DeleteRolePostConfirm();" type="button" class="btn btn-danger rounded-0">Eliminar</button>
+        <button onclick="$('#on-delete-modal').modal('toggle');" type="button" class="btn btn-primary bg-color1 rounded-0">Conservar</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - SAPRA</title>
+	<link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css">
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+	<link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body id="body">
+	<header>
+		<nav id="navigation" class="navbar navbar-expand-sm navbar-dark navbar-toggleable-sm bg-color1 border-bottom box-shadow mb-3" style="display: none;">
+			<div class="container">
+
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+						aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+					<ul class="nav navbar-nav ml-auto">
+						<li class="nav-item">
+							<a class="nav-link text-white text-uppercase" asp-area="" asp-controller="Authorization" asp-action="Logout">
+								Salir
+								<i class="fa fa-sign-out navbar-customIcon"></i>
+							</a>
+						</li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li class="nav-item">
+							<a class="nav-link text-white" asp-area="" asp-controller="Administrator" asp-action="Zone">Zonificación</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-white" asp-area="" asp-controller="Administrator" asp-action="Administrator">Administración</a>
+						</li>
+					</ul>
+				</div>
+
+			</div>
+		</nav>
+	</header>
+
+	<div class="container">
+		<main role="main">
+			@RenderBody()
+		</main>
+	</div>
+
+	<footer id="footer" class="border-top footer text-center" style="display: none;">
+		<div class="container">
+			&copy;Sistema de Administración del Plan Regulador de Alajuela
+		</div>
+	</footer>
+	@RenderSection("Scripts", required: false)
+</body>
+</html>
