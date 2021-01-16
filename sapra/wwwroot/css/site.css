@@ -7,6 +7,15 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+.yselect {
+    -webkit-touch-callout: initial !important; /* iOS Safari */
+    -webkit-user-select: initial !important; /* Safari */
+    -khtml-user-select: initial !important; /* Konqueror HTML */
+    -moz-user-select: initial !important; /* Firefox */
+    -ms-user-select: initial !important; /* Internet Explorer/Edge */
+    user-select: initial !important;
+}
+
 .modal-open {
     padding-right: 0px !important;
 }

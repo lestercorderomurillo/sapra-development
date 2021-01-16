@@ -52,10 +52,23 @@ namespace sapra.Controllers
 		}
 
 		[HttpPost]
-		public List<User> RequestAllUsers(string searchQuery = "")
+		public List<User> RequestAllUsers(string searchQuery = "", int page = 0)
 		{
+			var pp = 8;
+			var offset = page * pp;
+
 			var db = new DatabaseContext();
-			var users = db.UserRepository.ToList();
+			var users = new List<User>(); ;
+
+			if (searchQuery!= null && searchQuery.Length > 0) 
+			{
+				users = db.UserRepository.Where(e => e.UserInfo.FirstName.Contains(searchQuery)).Skip(offset).Take(pp).ToList();
+			}
+			else 
+			{
+				users = db.UserRepository.Skip(offset).Take(pp).ToList();
+			}
+			
 			var usersComplex = new List<User>();
 
 			foreach(var user in users) 

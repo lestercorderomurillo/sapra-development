@@ -1,1 +1,59 @@
-﻿<h4>Módulo de Usuarios</h4>
+﻿@model User
+@{
+	Role currentRole = new sapra.Controllers.AdministratorController().RequestRole(Model.RoleId, true);
+	string Identity = "Nacional";
+	if (Model.UserInfo.TypeIdentity == "2") { Identity = "Jurídica"; }
+	if (Model.UserInfo.TypeIdentity == "3") { Identity = "Extranjera"; }
+	string Gender = "Masculino";
+	if (Model.UserInfo.Gender == GenderEnum.Female) { Gender = "Femenino"; }
+}
+
+<h4>Consultar información sobre un Usuario</h4><br>
+<div class="form-group yselect">
+
+	<div class="row">
+		<div class="col col-lg-6 col-md-12 col-sm-12 pb-4">
+
+			<label class="font-weight-bolder">Nombre del Usuario:</label><br>
+			<label>@Model.UserInfo.FirstName @Model.UserInfo.LastName</label><br><br>
+			<label class="font-weight-bolder">Correo Electrónico:</label><br>
+			<label>@Model.UserInfo.Email</label><br><br>
+			<label class="font-weight-bolder">Identificación:</label><br>
+			<label>@Identity - @Model.UserInfo.Identity</label><br><br>
+
+		</div>
+		<div class="col col-lg-6 col-md-12 col-sm-12 pb-4">
+
+			<label class="font-weight-bolder">Rol del usuario:</label><br>
+			<label>@currentRole.Name</label><br><br>
+			<label class="font-weight-bolder">Fecha de Nacimiento:</label><br>
+			<label>@Model.UserInfo.DateOfBirth.ToString().Split(" ", 2)[0]</label><br><br>	
+			<label class="font-weight-bolder">Dirección de Residencia:</label><br>
+			<label>@Model.UserInfo.Address</label><br><br>
+
+		</div>
+	</div>
+	
+	
+	<label class="font-weight-bolder">Teléfonos:</label><br>
+	@foreach (var phone in Model.UserInfo.PhoneNumbers)
+	{
+		var type = "Casa";
+		if(phone.Type == "Mobile")
+		{
+			type = "Móvil";
+		}
+		else if(phone.Type == "Office") 
+		{
+			type = "Oficina";
+		}
+		<label>@type @phone.Number</label><br>
+	}
+	
+	<br><br>
+	<button class="btn btn-primary bg-color1 rounded-0" onclick="setTab('Users');">
+		<i class="btn-has-text fa fa-step-backward"></i>
+		Regresar
+	</button>
+
+</div>

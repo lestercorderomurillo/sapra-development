@@ -8,7 +8,7 @@ else
 	<h4>Editar un Usuario</h4><br>
 }
 <form id="formUserEdit" method="post" enctype="multipart/form-data" asp-action="SubmitUserUpdate" asp-controller="Administrator" class="form-group row">
-		
+    <input type="hidden" asp-for="User.UserId" value="@Model.User.UserId">	
 	<div class="col col-lg-6 col-md-12 col-sm-12 pb-4">
 		<label>Nombre:</label><br>
 		<input asp-for="User.UserInfo.FirstName" class="form-control w-100 border-dark" type="text" value="@Model.User.UserInfo.FirstName">

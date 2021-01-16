@@ -12,7 +12,7 @@
 			<input placeholder="Filtrar por nombre..." asp-for="SearchQuery" value="@Model.SearchQuery" class="form-control border-dark">
 		</div>
 		<div class="col-4">
-		<button type="submit" class="btn btn-primary bg-color1 rounded-0">
+		<button type="submit" class="btn btn-primary bg-color1 rounded-0" onclick="doSearch()">
 			<i class="fa fa-search"></i>
 				Buscar
 			</button>
@@ -34,17 +34,17 @@
 				<td>
 					@user.UserInfo.Email
 				</td>
-				<td width="155px">
-					<button onclick="ViewUser(@user.UserId);" class="btn btn-primary bg-color1 rounded-0">
-						<i class="fa fa-search"></i>
-					</button>
-					<button onclick="EditUser(@user.UserId)" class="btn btn-primary bg-color1 rounded-0">
-						<i class="fa fa-edit"></i>
-					</button>
-					<button onclick="DeleteUser(@user.UserId)" class="btn btn-danger rounded-0">
-						<i class="fa fa-remove"></i>
-					</button>
-				</td>
+                <td style="min-width: 160px">
+                    <button onclick="ViewUser(@user.UserId);" class="btn btn-primary bg-color1 rounded-0">
+                        <i class="fa fa-search"></i>
+                    </button>
+                    <button onclick="EditUser(@user.UserId)" class="btn btn-primary bg-color1 rounded-0">
+                        <i class="fa fa-edit"></i>
+                    </button>
+                    <button onclick="DeleteUser(@user.UserId)" class="btn btn-danger rounded-0">
+                        <i class="fa fa-remove"></i>
+                    </button>
+                </td>
 			</tr>
 		}
 	</table>
@@ -64,10 +64,21 @@
 		});
 	}
 
+	function doSearch() {
+		$.ajax({
+			type: "post",
+			url: "TabUsers",
+			data: { "searchQuery": $('#SearchQuery').val() },
+			success: function (response) {
+				$("#currentTab").html(response);
+			},
+		});
+	}
+
 	function ViewUser(userId) {
 		$.ajax({
 			type: "post",
-			url: "AdminUserView",
+			url: "ViewUser",
 			data: { "userId" : userId },
 			success: function (response) {
 				$("#currentTab").html(response);
@@ -96,7 +107,7 @@
 		setTimeout(function(){
 			$.ajax({
 				type: "post",
-				url: "AdminUserDelete",
+				url: "DeleteUser",
 				data: {"userId": _userId},
 				success: function (response) {
 					$("#currentTab").html(response);

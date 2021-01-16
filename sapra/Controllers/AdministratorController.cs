@@ -62,7 +62,7 @@ namespace sapra.Controllers
 			if (new SessionController().GetSessionRole(HttpContext) > 0) {
 				var model = new UserListViewModel(RequestAllUsers(searchQuery));
 				model.Response = GetResponseFromRedirect();
-				
+				model.SearchQuery = searchQuery;
 				return PartialView(model);
 			}
 			return AccessDeniedView();
@@ -124,6 +124,20 @@ namespace sapra.Controllers
 		}
 
 		[HttpPost]
+		public IActionResult ViewUser(int userId)
+		{
+			if (userId < 1)
+			{
+				return AccessDeniedView();
+			}
+			else
+			{
+				User user = RequestUser(userId, true);
+				return PartialView(user);
+			}
+		}
+
+		[HttpPost]
 		public IActionResult EditRole(int roleId)
 		{
 			Role role;
@@ -168,13 +182,45 @@ namespace sapra.Controllers
 			}
 			else
 			{
+				var UsersUsingRole = new DatabaseContext().UserRepository.Where(e => e.RoleId == roleId).ToList().Count();
+				if (UsersUsingRole == 0) 
+				{
+					var db = new DatabaseContext();
+					Role role = db.RoleRepository.Where(e => e.RoleId == roleId).SingleOrDefault();
+					db.RoleRepository.Remove(role);
+					db.SaveChanges();
+					var model = new RoleListViewModel(new DatabaseContext().RoleRepository.ToList());
+					model.Response = new ServerResponseViewModel("Se ha eliminado el rol correctamente. ", ResponseType.Success);
+					return PartialView("TabRoles", model);
+				}
+				else 
+				{
+					var model = new RoleListViewModel(new DatabaseContext().RoleRepository.ToList());
+					model.Response = new ServerResponseViewModel("Al menos "+ UsersUsingRole + " usuarios tienen asignados este rol, debe eliminar dichos usuarios si quiere eliminar ese rol.", ResponseType.Error);
+					return PartialView("TabRoles", model);
+				}
+
+				
+			}
+
+		}
+
+		[HttpPost]
+		public IActionResult DeleteUser(int userId)
+		{
+			if (userId < 1)
+			{
+				return AccessDeniedView();
+			}
+			else
+			{
 				var db = new DatabaseContext();
-				Role role = db.RoleRepository.Where(e => e.RoleId == roleId).SingleOrDefault();
-				db.RoleRepository.Remove(role);
+				User user = db.UserRepository.Where(e => e.UserId == userId).SingleOrDefault();
+				db.UserRepository.Remove(user);
 				db.SaveChanges();
-				var model = new RoleListViewModel(new DatabaseContext().RoleRepository.ToList());
-				model.Response = new ServerResponseViewModel("Se ha eliminado el rol correctamente.", ResponseType.Success);
-				return PartialView("TabRoles", model);
+				var model = new UserListViewModel(RequestAllUsers());
+				model.Response = new ServerResponseViewModel("Se ha eliminado el usuario correctamente. ", ResponseType.Success);
+				return PartialView("TabUsers", model);
 			}
 
 		}
@@ -227,10 +273,12 @@ namespace sapra.Controllers
 			if (userEditViewModel != null)
 			{
 				var user = userEditViewModel.User;
+				var db = new DatabaseContext();
+
 				if (user.UserId == 0)
 				{
 					/* INSERT */
-					var db = new DatabaseContext();
+					
 					user.Salt = CryptographyHelper.CreateSalt(32);
 					user.Hash = CryptographyHelper.Hash(userEditViewModel.Password + user.Salt);
 					user.LoginAttemptRecoveryTimestamp = DateTime.Now;
@@ -243,12 +291,27 @@ namespace sapra.Controllers
 				}
 				else
 				{
-					/*/* UPDATE */
-					/*var db = new DatabaseContext();
-					var model = db.RoleRepository.Where(e => e.RoleId == role.RoleId).SingleOrDefault();
-					db.Entry<Role>(model).CurrentValues.SetValues(role);
+					/* UPDATE */
+
+					var syncUser = db.UserRepository
+						.Where(e => e.UserId == user.UserId).SingleOrDefault();
+
+					var syncUserInfo = db.UserInfoRepository
+						.Where(e => e.UserId == user.UserId).SingleOrDefault();
+
+					syncUserInfo.FirstName = user.UserInfo.FirstName;
+					syncUserInfo.LastName = user.UserInfo.LastName;
+					syncUserInfo.Email = user.UserInfo.Email;
+					syncUserInfo.TypeIdentity = user.UserInfo.TypeIdentity;
+					syncUserInfo.Identity = user.UserInfo.Identity;
+					syncUser.RoleId = user.RoleId;
+					syncUserInfo.Gender = user.UserInfo.Gender;
+
+
+
 					db.SaveChanges();
-					TempData["response"] = "Se ha modificado el rol correctamente.";*/
+
+					TempData["response"] = "Se ha modificado el usuario correctamente.";
 				}
 
 				return RedirectToAction("Administrator", new { tab = "Users" });
