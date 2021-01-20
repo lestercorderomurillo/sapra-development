@@ -19,6 +19,7 @@ namespace sapra.ViewModels
 	public class LoginViewModel : BaseViewModel
 	{
 		public string Email { get; set; }
+
 		public string Password { get; set; }
 
 		public LoginViewModel() {
@@ -26,6 +27,15 @@ namespace sapra.ViewModels
 			Password = string.Empty;
 		}
 
+	}
+
+	public class RestorePasswordViewModel : LoginViewModel
+	{
+		public bool FirstTimeMode { get; set; }
+
+		public string Token { get; set; }
+
+		public string ConfirmPassword { get; set; }
 	}
 
 }

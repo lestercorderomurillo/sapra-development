@@ -19,18 +19,27 @@ namespace sapra.Controllers
 
 	public class AdministratorController : SystemController
 	{
-
+		// Panel Actions
 		[HttpGet]
-		public IActionResult Administrator(string tab = "General")
+		public IActionResult Panel(string tab = "General")
 		{
 			if (new SessionController().GetSessionRole(HttpContext) > 0) 
 			{
-				ViewBag.Tab = tab;
+				if(ControllerHelper.ViewExists(this, "Tab" + tab)) 
+				{
+					ViewBag.Tab = tab;
+				}
+				else 
+				{
+					return AccessDeniedView();
+				}
+
 				return View();
 			}
 			return new AuthorizationController().ForceRequestLogin();
 		}
 
+		// Tabs Actions
 		[HttpPost]
 		public IActionResult TabGeneral()
 		{
@@ -48,8 +57,10 @@ namespace sapra.Controllers
 		{
 			if (new SessionController().GetSessionRole(HttpContext) > 0) 
 			{
-				var model = new RoleListViewModel(new DatabaseContext().RoleRepository.ToList());
-				model.Response = GetResponseFromRedirect();
+				var model = new RoleListViewModel(new DatabaseContext().RoleRepository.ToList())
+				{
+					Response = GetResponseFromRedirect()
+				};
 
 				return PartialView(model);
 			}
@@ -60,9 +71,11 @@ namespace sapra.Controllers
 		public IActionResult TabUsers(string searchQuery = "")
 		{
 			if (new SessionController().GetSessionRole(HttpContext) > 0) {
-				var model = new UserListViewModel(RequestAllUsers(searchQuery));
-				model.Response = GetResponseFromRedirect();
-				model.SearchQuery = searchQuery;
+				var model = new UserListViewModel(RequestAllUsers(searchQuery))
+				{
+					Response = GetResponseFromRedirect(),
+					SearchQuery = searchQuery
+				};
 				return PartialView(model);
 			}
 			return AccessDeniedView();
@@ -72,11 +85,59 @@ namespace sapra.Controllers
 		public IActionResult TabZone()
 		{
 			if (new SessionController().GetSessionRole(HttpContext) > 0) {
-				return PartialView();
+				var model = new MapLayerListViewModel(RequestAllMapLayers())
+				{
+					Response = GetResponseFromRedirect()
+				};
+				return PartialView(model);
 			}
 			return AccessDeniedView();
 		}
 
+		// View Actions
+		[HttpPost]
+		public IActionResult ViewUser(int userId)
+		{
+			if (userId < 1)
+			{
+				return AccessDeniedView();
+			}
+			else
+			{
+				var user = RequestUser(userId, true);
+				return PartialView(user);
+			}
+		}
+
+		[HttpPost]
+		public IActionResult ViewRole(int roleId)
+		{
+			if (roleId < 1)
+			{
+				return AccessDeniedView();
+			}
+			else
+			{
+				var role = RequestRole(roleId, true);
+				return PartialView(role);
+			}
+		}
+
+		[HttpPost]
+		public IActionResult ViewLayer(int mapLayerId)
+		{
+			if (mapLayerId < 1)
+			{
+				return AccessDeniedView();
+			}
+			else
+			{
+				var layer = new DatabaseContext().MapLayerRepository.Where(e => e.MapLayerId == mapLayerId).SingleOrDefault();
+				return PartialView(layer);
+			}
+		}
+
+		// Edit (on Load) Actions
 		[HttpPost]
 		public IActionResult EditUser(int userId)
 		{
@@ -107,34 +168,6 @@ namespace sapra.Controllers
 
 			var model = new UserEditViewModel(user);
 			return PartialView("EditUser", model);
-		}
-
-		[HttpPost]
-		public IActionResult ViewRole(int roleId) 
-		{ 
-			if(roleId < 1) 
-			{
-				return AccessDeniedView();
-			}
-			else 
-			{
-				Role role = RequestRole(roleId, true);
-				return PartialView(role);
-			}
-		}
-
-		[HttpPost]
-		public IActionResult ViewUser(int userId)
-		{
-			if (userId < 1)
-			{
-				return AccessDeniedView();
-			}
-			else
-			{
-				User user = RequestUser(userId, true);
-				return PartialView(user);
-			}
 		}
 
 		[HttpPost]
@@ -174,6 +207,46 @@ namespace sapra.Controllers
 		}
 
 		[HttpPost]
+		public IActionResult EditLayer(int mapLayerId)
+		{
+			MapLayer layer;
+			var db = new DatabaseContext();
+
+			if (mapLayerId == 0)
+			{
+				layer = new MapLayer();
+			}
+			else
+			{
+				layer = db.MapLayerRepository.Where(e => e.MapLayerId == mapLayerId).SingleOrDefault();
+			}
+
+			return PartialView("EditLayer", layer);
+		}
+
+		// Delete Actions
+		[HttpPost]
+		public IActionResult DeleteUser(int userId)
+		{
+			if (userId < 1)
+			{
+				return AccessDeniedView();
+			}
+			else
+			{
+				var db = new DatabaseContext();
+				User user = db.UserRepository.Where(e => e.UserId == userId).SingleOrDefault();
+				db.UserRepository.Remove(user);
+				db.SaveChanges();
+				var model = new UserListViewModel(RequestAllUsers())
+				{
+					Response = new ServerResponseViewModel("Se ha eliminado el usuario correctamente. ", ResponseType.Success)
+				};
+				return PartialView("TabUsers", model);
+			}
+		}
+
+		[HttpPost]
 		public IActionResult DeleteRole(int roleId)
 		{
 			if (roleId < 1)
@@ -189,40 +262,90 @@ namespace sapra.Controllers
 					Role role = db.RoleRepository.Where(e => e.RoleId == roleId).SingleOrDefault();
 					db.RoleRepository.Remove(role);
 					db.SaveChanges();
-					var model = new RoleListViewModel(new DatabaseContext().RoleRepository.ToList());
-					model.Response = new ServerResponseViewModel("Se ha eliminado el rol correctamente. ", ResponseType.Success);
+					var model = new RoleListViewModel(new DatabaseContext().RoleRepository.ToList())
+					{
+						Response = new ServerResponseViewModel("Se ha eliminado el rol correctamente. ", ResponseType.Success)
+					};
 					return PartialView("TabRoles", model);
 				}
 				else 
 				{
-					var model = new RoleListViewModel(new DatabaseContext().RoleRepository.ToList());
-					model.Response = new ServerResponseViewModel("Al menos "+ UsersUsingRole + " usuarios tienen asignados este rol, debe eliminar dichos usuarios si quiere eliminar ese rol.", ResponseType.Error);
+					var model = new RoleListViewModel(new DatabaseContext().RoleRepository.ToList())
+					{
+						Response = new ServerResponseViewModel("Al menos " + UsersUsingRole + " usuarios tienen asignados este rol, debe eliminar dichos usuarios si quiere eliminar ese rol.", ResponseType.Error)
+					};
 					return PartialView("TabRoles", model);
 				}
-
-				
 			}
-
 		}
 
 		[HttpPost]
-		public IActionResult DeleteUser(int userId)
+		public IActionResult DeleteLayer(int mapLayerId)
 		{
-			if (userId < 1)
+			if (mapLayerId < 1)
 			{
 				return AccessDeniedView();
 			}
 			else
 			{
 				var db = new DatabaseContext();
-				User user = db.UserRepository.Where(e => e.UserId == userId).SingleOrDefault();
-				db.UserRepository.Remove(user);
+				var layer = db.MapLayerRepository.Where(e => e.MapLayerId == mapLayerId).SingleOrDefault();
+				db.MapLayerRepository.Remove(layer);
 				db.SaveChanges();
-				var model = new UserListViewModel(RequestAllUsers());
-				model.Response = new ServerResponseViewModel("Se ha eliminado el usuario correctamente. ", ResponseType.Success);
-				return PartialView("TabUsers", model);
+				var model = new MapLayerListViewModel(RequestAllMapLayers())
+				{
+					Response = new ServerResponseViewModel("Se ha eliminado la capa correctamente. ", ResponseType.Success)
+				};
+				return PartialView("TabZone", model);
 			}
+		}
 
+		// Edit (on Submit) Actions
+		[HttpPost]
+		public IActionResult SubmitUserUpdate(UserEditViewModel userEditViewModel)
+		{
+			if (userEditViewModel != null)
+			{
+				var user = userEditViewModel.User;
+				var db = new DatabaseContext();
+
+				if (user.UserId == 0)
+				{
+					/* INSERT */
+					user.Salt = CryptographyHelper.CreateSalt(32);
+					user.Hash = CryptographyHelper.Hash(userEditViewModel.Password + user.Salt);
+					user.LoginAttempts = 0;
+
+					db.UserRepository.Add(user);
+					db.SaveChanges();
+
+					TempData["response"] = "Se ha agregado el usuario correctamente.";
+				}
+				else
+				{
+					/* UPDATE */
+					var syncUser = db.UserRepository
+						.Where(e => e.UserId == user.UserId).SingleOrDefault();
+
+					var syncUserInfo = db.UserInfoRepository
+						.Where(e => e.UserId == user.UserId).SingleOrDefault();
+
+					syncUserInfo.FirstName = user.UserInfo.FirstName;
+					syncUserInfo.LastName = user.UserInfo.LastName;
+					syncUserInfo.Email = user.UserInfo.Email;
+					syncUserInfo.TypeIdentity = user.UserInfo.TypeIdentity;
+					syncUserInfo.Identity = user.UserInfo.Identity;
+					syncUser.RoleId = user.RoleId;
+					syncUserInfo.Gender = user.UserInfo.Gender;
+
+					db.SaveChanges();
+
+					TempData["response"] = "Se ha modificado el usuario correctamente.";
+				}
+
+				return RedirectToAction("Panel", new { tab = "Users" });
+			}
+			return AccessDeniedView();
 		}
 
 		[HttpPost]
@@ -262,59 +385,38 @@ namespace sapra.Controllers
 					TempData["response"] = "Se ha modificado el rol correctamente.";
 				}
 
-				return RedirectToAction("Administrator", new { tab = "Roles" });
+				return RedirectToAction("Panel", new { tab = "Roles" });
 			}
 			return AccessDeniedView();
 		}
 
 		[HttpPost]
-		public IActionResult SubmitUserUpdate(UserEditViewModel userEditViewModel)
+		public IActionResult SubmitLayerUpdate(MapLayer layer)
 		{
-			if (userEditViewModel != null)
+			if (layer != null)
 			{
-				var user = userEditViewModel.User;
 				var db = new DatabaseContext();
 
-				if (user.UserId == 0)
+				if (layer.MapLayerId == 0)
 				{
 					/* INSERT */
-					
-					user.Salt = CryptographyHelper.CreateSalt(32);
-					user.Hash = CryptographyHelper.Hash(userEditViewModel.Password + user.Salt);
-					user.LoginAttemptRecoveryTimestamp = DateTime.Now;
-					user.LoginAttempts = 0;
-
-					db.UserRepository.Add(user);
+					db.MapLayerRepository.Add(layer);
 					db.SaveChanges();
-
-					TempData["response"] = "Se ha agregado el usuario correctamente.";
+					TempData["response"] = "Se ha agregado la capa correctamente.";
 				}
 				else
 				{
 					/* UPDATE */
+					var syncLayer = db.MapLayerRepository
+						.Where(e => e.MapLayerId == layer.MapLayerId).SingleOrDefault();
 
-					var syncUser = db.UserRepository
-						.Where(e => e.UserId == user.UserId).SingleOrDefault();
-
-					var syncUserInfo = db.UserInfoRepository
-						.Where(e => e.UserId == user.UserId).SingleOrDefault();
-
-					syncUserInfo.FirstName = user.UserInfo.FirstName;
-					syncUserInfo.LastName = user.UserInfo.LastName;
-					syncUserInfo.Email = user.UserInfo.Email;
-					syncUserInfo.TypeIdentity = user.UserInfo.TypeIdentity;
-					syncUserInfo.Identity = user.UserInfo.Identity;
-					syncUser.RoleId = user.RoleId;
-					syncUserInfo.Gender = user.UserInfo.Gender;
-
-
-
+					db.Entry(syncLayer).CurrentValues.SetValues(layer);
 					db.SaveChanges();
 
-					TempData["response"] = "Se ha modificado el usuario correctamente.";
+					TempData["response"] = "Se ha modificado la capa correctamente.";
 				}
 
-				return RedirectToAction("Administrator", new { tab = "Users" });
+				return RedirectToAction("Panel", new { tab = "Zone" });
 			}
 			return AccessDeniedView();
 		}
@@ -327,7 +429,7 @@ namespace sapra.Controllers
 				SaveSettings(model);
 			}
 			TempData["response"] = "Se ha actualizado correctamente la información.";
-			return RedirectToAction("Administrator", new { tab = "General" });
+			return RedirectToAction("Panel", new { tab = "General" });
 		}
 
 	}

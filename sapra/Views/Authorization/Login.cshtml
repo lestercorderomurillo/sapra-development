@@ -3,9 +3,10 @@
 	ViewData["Title"] = "Inicio de Sesión";
 	
 }
-<div class="text-center">
-	<br><br><br><br>
-	<form method="post" enctype="multipart/form-data" asp-action="Login" asp-controller="Authorization" id="formLogin" class="col col-lg-5 col-md-10 col-sm-10 mx-auto bg-white rounded text-center">
+<br><br><br><br>
+<div class="text-center row overflow-hidden">
+	<form method="post" enctype="multipart/form-data" asp-action="Login" asp-controller="Authorization" id="formLogin"
+	class="col col-12 col-sm-12 col-md-8 col-lg-8 col-xl-4 mx-auto bg-white rounded text-center">
 		<br><br><h5 class="text-secondary">@ViewBag.MainTitle</h5>
 		<br><h4>@ViewBag.Subtitle</h4>
 		<div class="@Model.Response.GetResponseTypeStyle() rounded p-3 m-3 h6 alert-dismissible">
@@ -14,8 +15,9 @@
 		<br>
 		<div class="form-group mx-auto" style="min-width: 85%; max-width: 85%;">
 			<input id="Email" name="Email" placeholder="Correo Electrónico" class="form-control form-control-lg" type="text" value="@Model.Email"><br>
-			<input id="Password" name="Password" placeholder="Contraseña" class="form-control form-control-lg" type="password"><br>
+			<input id="Password" name="Password" placeholder="Contraseña" class="form-control form-control-lg" type="password">
 		</div>
+		¿Olvidó su contraseña? <u><a asp-action="RequestRestorePassword" asp-controller="Authorization" class="font-weight-bolder u">Recuperar</a></u><br><br>
 		<button class="btn btn-dark text-uppercase" type="submit" style="min-width: 85%">Iniciar Sesión</button><br><br><br>
 	</form>
 </div>

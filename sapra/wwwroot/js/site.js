@@ -48,18 +48,15 @@ function show(obj) {
 	$(obj).show();
 }
 
-jQuery.validator.addMethod("lessThan",
-function (value, element, params) {
-
+$.validator.addMethod("lessThan", function (value, element, params) {
 	if (!/Invalid|NaN/.test(new Date(value))) {
 		return new Date(value) < new Date($(params).val());
 	}
-
 	return isNaN(value) && isNaN($(params).val())
 		|| (Number(value) < Number($(params).val()));
-	}, 'La fecha debe ser inferior a {0}.');
+}, 'La fecha debe ser inferior a {0}.');
 
-function ResetFormValidator(formId) {
+function resetFormValidator(formId) {
 	$(formId).removeData('validator');
 	$(formId).removeData('unobtrusiveValidation');
 	$.validator.unobtrusive.parse(formId);

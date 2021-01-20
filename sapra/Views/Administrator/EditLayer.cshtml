@@ -1,0 +1,62 @@
+﻿@model MapLayer
+@if(Model.MapLayerId == 0) 
+{
+	<h4>Agregar una capa Nueva</h4><br>
+}
+else 
+{
+	<h4>Editar un Capa</h4><br>
+}
+<form id="formLayerEdit" method="post" asp-action="SubmitLayerUpdate" asp-controller="Administrator" class="form-group">
+	<input type="hidden" asp-for="MapLayerId" value="@Model.MapLayerId">
+	<label>Nombre de la capa:</label><br>
+	<input asp-for="Name" type="text" class="form-control border-dark mw-450" value="@Model.Name"><br>
+	<label>Dirección URL de la capa:</label><br>
+	<input asp-for="URL" type="text" class="form-control border-dark mw-450" value="@Model.URL">
+	<br><br>
+	<button type="button" onclick="setTab('Zone');" class="btn btn-primary bg-color1 rounded-0">
+		<i class="btn-has-text fa fa-step-backward"></i>
+		Abortar
+	</button>
+
+	<button type="submit" class="btn btn-primary bg-color1 rounded-0">
+		<i class="btn-has-text fa fa-save"></i>
+		@{ var text = (Model.MapLayerId == 0) ? "Insertar Capa" : "Guardar Cambios"; }
+		@text
+	</button>
+
+</form>
+<script>
+	$(function() {
+		$("#formLayerEdit").validate({
+			rules: {
+				Name: {
+					required: true,
+					minlength: 8,
+					maxlength: 32
+				},
+				URL: {
+					required: true,
+					minlength: 8,
+					maxlength: 64
+				}
+			},
+		messages: {
+			Name: "Debe tener entre 8 y 32 letras.",
+			URL: "Debe ser una URL válida."
+		},
+		submitHandler: function(form) {
+			form.submit();
+		}
+	  });
+	});
+
+	$(document).ready(function () {
+		$('.selectpicker').selectpicker();
+		$('.bs-select-all').html('Seleccionar todo');
+		$('.bs-deselect-all').html('Deseleccionar todo');
+		$("#URL").rules( "add", {
+		  url2: true
+		});
+	});
+</script>

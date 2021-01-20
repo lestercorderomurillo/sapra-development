@@ -6,6 +6,16 @@ using System.Threading.Tasks;
 
 namespace sapra.ViewModels
 {
+	public class MapLayerListViewModel : BaseViewModel
+	{
+		public List<MapLayer> Layers { get; set; }
+
+		public MapLayerListViewModel(List<MapLayer> layers)
+		{
+			Layers = layers;
+		}
+	}
+
 	public class RoleListViewModel : BaseViewModel
 	{
 		public List<Role> Roles { get; set; }

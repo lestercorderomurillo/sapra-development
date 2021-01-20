@@ -11,6 +11,10 @@ using sapra.App;
 using sapra.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net.Mail;
+using System.Net;
 
 namespace sapra.Controllers
 {
@@ -49,6 +53,15 @@ namespace sapra.Controllers
 			}
 			
 			return user;
+		}
+
+		[HttpPost]
+		public List<MapLayer> RequestAllMapLayers(int page = 0)
+		{
+			var pp = 8;
+			var offset = page * pp;
+			var db = new DatabaseContext();
+			return db.MapLayerRepository.Skip(offset).Take(pp).ToList();
 		}
 
 		[HttpPost]
@@ -151,6 +164,22 @@ namespace sapra.Controllers
 			
 		}
 
+		public async Task SendEmail(string dst, string title, string body)
+		{
+			var message = new MailMessage("sapradevelopment@gmail.com", dst);
+			message.Subject = title;
+			message.Body = body;
+
+			var smtpClient = new SmtpClient("smtp.gmail.com", 25) {
+				EnableSsl = true,
+				DeliveryMethod = SmtpDeliveryMethod.Network,
+				UseDefaultCredentials = true,
+				Credentials = new NetworkCredential("sapradevelopment@gmail.com", "play3657x")
+			};
+			
+			await smtpClient.SendMailAsync(message);
+			
+		}
 
 	}
 }

@@ -20,12 +20,28 @@
 			<label>@Model.UserInfo.Email</label><br><br>
 			<label class="font-weight-bolder">Identificación:</label><br>
 			<label>@Identity - @Model.UserInfo.Identity</label><br><br>
+			<label class="font-weight-bolder">Teléfonos:</label><br>
+			@foreach (var phone in Model.UserInfo.PhoneNumbers)
+			{
+				var type = "Casa";
+				if(phone.Type == "Mobile")
+				{
+					type = "Móvil";
+				}
+				else if(phone.Type == "Office") 
+				{
+					type = "Oficina";
+				}
+				<label>@type - @phone.Number</label><br>
+			}
 
 		</div>
 		<div class="col col-lg-6 col-md-12 col-sm-12 pb-4">
 
 			<label class="font-weight-bolder">Rol del usuario:</label><br>
 			<label>@currentRole.Name</label><br><br>
+			<label class="font-weight-bolder">Sexo Biológico:</label><br>
+			<label>@Gender</label><br><br>
 			<label class="font-weight-bolder">Fecha de Nacimiento:</label><br>
 			<label>@Model.UserInfo.DateOfBirth.ToString().Split(" ", 2)[0]</label><br><br>	
 			<label class="font-weight-bolder">Dirección de Residencia:</label><br>
@@ -33,24 +49,6 @@
 
 		</div>
 	</div>
-	
-	
-	<label class="font-weight-bolder">Teléfonos:</label><br>
-	@foreach (var phone in Model.UserInfo.PhoneNumbers)
-	{
-		var type = "Casa";
-		if(phone.Type == "Mobile")
-		{
-			type = "Móvil";
-		}
-		else if(phone.Type == "Office") 
-		{
-			type = "Oficina";
-		}
-		<label>@type @phone.Number</label><br>
-	}
-	
-	<br><br>
 	<button class="btn btn-primary bg-color1 rounded-0" onclick="setTab('Users');">
 		<i class="btn-has-text fa fa-step-backward"></i>
 		Regresar

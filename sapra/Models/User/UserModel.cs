@@ -21,14 +21,14 @@ namespace sapra.Models
 		[StringLength(64)]
 		public string Salt { get; set; }
 
+		public DateTime LastLogin { get; set; }
+
 		[StringLength(64)]
 		public string RecoveryHash { get; set; }
 
 		public DateTime RecoveryTimestamp { get; set; }
 
 		public int LoginAttempts { get; set; }
-
-		public DateTime LoginAttemptRecoveryTimestamp { get; set; }
 
 		/**EF Reference**/
 		public UserInfo UserInfo { get; private set; }

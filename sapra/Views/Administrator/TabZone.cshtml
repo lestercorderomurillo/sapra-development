@@ -1,1 +1,107 @@
-﻿<h4>Módulo de Zonificación</h4>
+﻿@model sapra.ViewModels.MapLayerListViewModel
+<h4>Módulo de Zonificación</h4><br>
+<div>
+	<button onclick="AddLayer()" class="btn btn-primary bg-color1 rounded-0 mb-4">
+		<i class="btn-has-text fa fa-map"></i>
+		Registrar nueva capa en el sistema
+	</button>
+	<partial name="~/Views/Shared/Response.cshtml" for="Response">
+	<h5 class="pt-3">Capas existentes en el mapa ArcGis </h5><br>
+	<table class="w-75 table">
+		<tr>
+			<th>Nombre</th>
+			<th>Acción</th>
+		</tr>
+		@foreach(MapLayer layer in Model.Layers)
+		{
+			<tr>
+				<td>
+					@layer.Name
+				</td>
+				<td style="min-width: 160px">
+					<button onclick="ViewLayer(@layer.MapLayerId);" class="btn btn-primary bg-color1 rounded-0">
+						<i class="fa fa-search"></i>
+					</button>
+					<button onclick="EditLayer(@layer.MapLayerId)" class="btn btn-primary bg-color1 rounded-0">
+						<i class="fa fa-edit"></i>
+					</button>
+					<button onclick="DeleteLayer(@layer.MapLayerId)" class="btn btn-danger rounded-0">
+						<i class="fa fa-remove"></i>
+					</button>
+				</td>
+			</tr>
+		}
+	</table>
+</div>
+<script>
+
+	var _mapLayerId = 0;
+
+	function AddLayer() {
+		$.ajax({
+			type: "post",
+			url: "EditLayer",
+			dataType: "html",
+			contentType: "application/json",
+			data: { "mapLayerId" : 0 },
+			success: function (response) {
+				$("#currentTab").html(response);
+			},
+		});
+	}
+
+	function ViewLayer(mapLayerId) {
+		$.ajax({
+			type: "post",
+			url: "ViewLayer",
+			data: {"mapLayerId": mapLayerId},
+			success: function (response) {
+				$("#currentTab").html(response);
+			},
+		});
+	}
+
+	function EditLayer(mapLayerId) {
+		$.ajax({
+			type: "post",
+			url: "EditLayer",
+			data: {"mapLayerId": mapLayerId},
+			success: function (response) {
+				$("#currentTab").html(response);
+			},
+		});
+	}
+
+	function DeleteLayer(mapLayerId) {
+		_mapLayerId = mapLayerId;
+		$('#on-delete-modal').modal('toggle');
+	}
+
+	function DeleteLayerPostConfirm() {
+		$('#on-delete-modal').modal('hide');
+		setTimeout(function(){
+			$.ajax({
+				type: "post",
+				url: "DeleteLayer",
+				data: {"mapLayerId": _mapLayerId},
+				success: function (response) {
+					$("#currentTab").html(response);
+				},
+			});
+		}, 1000);
+	}
+</script>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="on-delete-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="modal-title">¿Está seguro que quiere eliminar esa capa del mapa?</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="DeleteLayerPostConfirm();" type="button" class="btn btn-danger rounded-0">Eliminar</button>
+        <button onclick="$('#on-delete-modal').modal('toggle');" type="button" class="btn btn-primary bg-color1 rounded-0">Conservar</button>
+      </div>
+    </div>
+  </div>
+</div>

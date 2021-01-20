@@ -17,6 +17,8 @@ namespace sapra.App
 
         public DbSet<UserPhone> UserPhoneRepository { get; set; }
 
+        public DbSet<MapLayer> MapLayerRepository { get; set; }
+
         public DbSet<Role> RoleRepository { get; set; }
 
         public DbSet<Role_Permission> RolePermissionRepository { get; set; }
@@ -28,6 +30,7 @@ namespace sapra.App
             // Unique Keys
             modelBuilder.Entity<User>().HasKey(e => e.UserId);
             modelBuilder.Entity<UserInfo>().HasKey(e => e.UserId);
+            modelBuilder.Entity<MapLayer>().HasKey(e => e.MapLayerId);
 
             // Composed Keys
             modelBuilder.Entity<UserPhone>().HasKey(e => new { e.UserId, e.Number });
@@ -74,30 +77,5 @@ namespace sapra.App
 	    }
 
     }
-    public class DatabaseInitializer
-	{
-		public void Initialize(DatabaseContext db)
-		{
-
-
-            var testUsers = new User[]{ 
-                new User(),
-                new User()
-            };
-			
-			db.Database.EnsureCreated();
-
-			foreach (User user in testUsers)
-			{
-				db.UserRepository.Add(user);
-				db.SaveChanges();
-				db.DetachAllEntities();
-			}
-
-		}
-
-        
-
-	}
 
 }

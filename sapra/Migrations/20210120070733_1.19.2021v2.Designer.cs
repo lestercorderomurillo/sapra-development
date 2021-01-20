@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using sapra.App;
 
 namespace sapra.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210120070733_1.19.2021v2")]
+    partial class _1192021v2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,6 +94,9 @@ namespace sapra.Migrations
                         .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("LastLogin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LoginAttemptRecoveryTimestamp")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("LoginAttempts")

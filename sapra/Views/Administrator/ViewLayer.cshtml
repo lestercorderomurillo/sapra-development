@@ -1,0 +1,15 @@
+﻿@model MapLayer
+<h4>Consultar información sobre una Capa</h4><br>
+<div class="form-group">
+
+	<label class="font-weight-bolder">Nombre del Rol:</label><br>
+	<label>@Model.Name</label><br><br>
+	<label class="font-weight-bolder">Dirección URL de la capa:</label><br>
+	<label>@Model.URL</label><br><br>
+	<button class="btn btn-primary bg-color1 rounded-0" 
+	onclick="setTab('Zone');">
+		<i class="btn-has-text fa fa-step-backward"></i>
+		Regresar
+	</button>
+
+</div>

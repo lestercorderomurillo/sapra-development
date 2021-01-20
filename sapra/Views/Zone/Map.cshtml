@@ -1,0 +1,59 @@
+﻿@{
+	ViewData["Title"] = "Zonificación";
+}
+<style>
+    .map {
+	    padding: 0;
+	    margin: 0;
+	    width: 100% !important;
+	    height: 100% !important;
+    }
+
+    .full {
+	    height: calc(100% - 80px);
+	    margin: 0 !important;
+    }
+</style>
+
+<div id="mapDiv" class="map"></div>
+<script>
+    displayLayout();
+
+	require(["esri/Map", "esri/views/MapView"], function (Map, MapView) {
+        var map = new Map({
+            basemap: "topo-vector"
+        });
+
+        var view = new MapView({
+            container: "mapDiv",
+            map: map,
+            center: [-84.217, 10.012],
+            zoom: 14
+        });
+
+        // create a Div
+        var coordsWidget = document.createElement("div");
+        coordsWidget.id = "coordsWidget";
+        coordsWidget.className = "esri-widget esri-component";
+        coordsWidget.style.padding = "7px 15px 5px";
+        view.ui.add(coordsWidget, "bottom-right");
+
+        // function
+        function showCoordinates(pt) {
+            var coords = "Latitud/Longitud " + pt.latitude.toFixed(3) + " " + pt.longitude.toFixed(3) + 
+                " | Escala 1:" + Math.round(view.scale * 1) / 1 +
+                " | Zoom " + view.zoom;
+            coordsWidget.innerHTML = coords;
+        }
+
+        // events handlers
+        view.watch(["stationary"], function() {
+            showCoordinates(view.center);
+        });
+
+        view.on(["pointer-down","pointer-move"], function(evt) {
+            showCoordinates(view.toMap({ x: evt.x, y: evt.y }));
+        });
+
+    });
+</script>

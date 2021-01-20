@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
 using sapra.App;
 
+#pragma warning disable CS0618
 namespace sapra
 {
 
@@ -66,7 +66,7 @@ namespace sapra
 			}
 			else
 			{
-				app.UseExceptionHandler("/Administrator/Error");
+				app.UseExceptionHandler("/Shared/Error");
 				app.UseHsts();
 			}
 			app.UseHttpsRedirection();
@@ -77,6 +77,12 @@ namespace sapra
 
 			app.UseEndpoints(endpoints =>
 			{
+
+				endpoints.MapControllerRoute(
+					name: "Map",
+					pattern: "Map",
+					defaults: new { controller = "Zone", action = "Map" });
+
 				endpoints.MapControllerRoute(
 					name: "Logout",
 					pattern: "Logout",
@@ -89,7 +95,7 @@ namespace sapra
 
 				endpoints.MapControllerRoute(
 					name: "default",
-					pattern: "{controller=Administrator}/{action=Index}/{id?}");
+					pattern: "{controller=Zone}/{action=Map}/{id?}");
 
 			});
 		}
