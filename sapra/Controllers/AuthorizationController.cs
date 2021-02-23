@@ -143,6 +143,7 @@ namespace sapra.Controllers
 				user.Salt = CryptographyHelper.CreateSalt(32);
 				user.Hash = CryptographyHelper.Hash(model.Password + user.Salt);
 				user.LastLogin = DateTime.Now;
+				user.RecoveryHash = CryptographyHelper.CreateSalt(32);
 				db.SaveChanges();
 				TempData["Response"] = "Contraseña actualizada";
 				return RedirectToAction("Login", "Authorization");

@@ -1,4 +1,5 @@
-﻿@{
+﻿@model sapra.ViewModels.MapLayerListViewModel
+@{
 	ViewData["Title"] = "Zonificación";
 }
 <style>
@@ -10,20 +11,53 @@
     }
 
     .full {
-	    height: calc(100% - 80px);
+	    height: calc(100% - 56px);
 	    margin: 0 !important;
     }
+
+	.esri-view .esri-view-surface--inset-outline:focus::after {
+		outline: none !important;
+	}
+
+	.esri-layer-list__item .esri-layer-list__item-container {
+		border: none !important;
+		outline: none !important;
+	}
 </style>
 
 <div id="mapDiv" class="map"></div>
 <script>
     displayLayout();
 
-	require(["esri/Map", "esri/views/MapView"], function (Map, MapView) {
+    require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/widgets/Search", "esri/widgets/LayerList"], function (Map, MapView, FeatureLayer, Search, LayerList) {
+        
         var map = new Map({
-            basemap: "topo-vector"
+            basemap: "osm"
         });
 
+        var layersURL = [];
+        var layersName = [];
+
+        @foreach (MapLayer mapLayer in Model.Layers) 
+        {
+        @:layersURL.push("@Model.BaseUrl@mapLayer.URL");
+        @:layersName.push(decodeHtml("@mapLayer.Name"));
+        }
+
+        layersURL.reverse();
+        layersName.reverse();
+
+		// for each layer of the system, add layer
+		// add to the controls to switch beetwen layers
+        for (x = 0; x < layersURL.length; x++)
+        {
+            var layer = new FeatureLayer({
+                url: layersURL[x]
+            });
+            map.add(layer);
+        }
+
+        // Views 
         var view = new MapView({
             container: "mapDiv",
             map: map,
@@ -31,14 +65,22 @@
             zoom: 14
         });
 
-        // create a Div
+        // Seach Widget
+        var search = new Search({
+            view: view
+        });
+
+        // Layers Widget
+        var layersWidget = new LayerList({
+          view: view
+        });
+
+        // Coords Widget
         var coordsWidget = document.createElement("div");
         coordsWidget.id = "coordsWidget";
         coordsWidget.className = "esri-widget esri-component";
         coordsWidget.style.padding = "7px 15px 5px";
-        view.ui.add(coordsWidget, "bottom-right");
 
-        // function
         function showCoordinates(pt) {
             var coords = "Latitud/Longitud " + pt.latitude.toFixed(3) + " " + pt.longitude.toFixed(3) + 
                 " | Escala 1:" + Math.round(view.scale * 1) / 1 +
@@ -46,7 +88,6 @@
             coordsWidget.innerHTML = coords;
         }
 
-        // events handlers
         view.watch(["stationary"], function() {
             showCoordinates(view.center);
         });
@@ -55,5 +96,31 @@
             showCoordinates(view.toMap({ x: evt.x, y: evt.y }));
         });
 
+        // Add to Map Result
+        view.ui.add([
+            {
+                component: coordsWidget,
+                position: "bottom-right",
+            },
+            {
+                component: layersWidget,
+                position: "top-left",
+                index: 0
+            },
+            {
+                component: search,
+                position: "top-right",
+            }
+        ]);
+
+        view.when(function () {
+
+            setTimeout(function(){
+                 $('.esri-search__input').attr("placeholder", "Buscar lugares o direcciones...");
+            }, 1000);
+
+        });
+
     });
+
 </script>

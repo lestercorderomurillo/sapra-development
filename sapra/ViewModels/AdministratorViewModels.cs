@@ -8,6 +8,8 @@ namespace sapra.ViewModels
 {
 	public class MapLayerListViewModel : BaseViewModel
 	{
+		public string BaseUrl { get; set; }
+
 		public List<MapLayer> Layers { get; set; }
 
 		public MapLayerListViewModel(List<MapLayer> layers)

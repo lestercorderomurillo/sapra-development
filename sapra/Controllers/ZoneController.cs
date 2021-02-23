@@ -24,7 +24,7 @@ namespace sapra.Controllers
 		{
 			if (new SessionController().GetSessionRole(HttpContext) > 0) 
 			{
-				return View();
+				return View(new MapLayerListViewModel(RequestAllMapLayers()){ BaseUrl = LoadSettings().ArcGISURL });
 			}
 			return new AuthorizationController().ForceRequestLogin();
 		}

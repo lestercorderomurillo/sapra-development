@@ -7,6 +7,10 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+.bg-color2 {
+    background-color: rgb(32,32,48);
+}
+
 .scrollable {
     overflow: scroll;
 }
