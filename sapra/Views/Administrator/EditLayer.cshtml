@@ -13,7 +13,73 @@ else
 	<input asp-for="Name" type="text" class="form-control border-dark mw-450" value="@Model.Name"><br>
 	<label>Dirección URL de la capa:</label><br>
 	<input asp-for="URL" type="text" class="form-control border-dark mw-450" value="@Model.URL">
-	<br><br>
+	<br>
+	<div id="FieldTemplate" style="display:none;">
+
+		<div class="FieldForm pb-4 w-100 row">
+
+			<div class="col col-xl-3 col-lg-12 col-md-12 col-sm-12 col-12 pb-2">
+				<input id="MapLayerFields_^_Alias" name="MapLayerFields[^].Alias" class="form-control w-100 border-dark d-inline-block fieldClass" type="text">
+			</div>
+
+			<div class="col col-xl-3 col-lg-12 col-md-12 col-sm-12 col-12 pb-2">
+				<input id="MapLayerFields_^_Name" name="MapLayerFields[^].Name" class="form-control w-100 border-dark d-inline-block fieldClass" type="text">
+			</div>
+
+			<div class="col col-xl-3 col-lg-12 col-md-12 col-sm-12 col-12 pb-2">
+				<select id="MapLayerFields_^_Type" name="MapLayerFields[^].Type" class="form-control border-dark fieldClass">
+					<option value="">Seleccionar</option>
+					<option value="0">Número</option>
+					<option value="1">Texto</option>
+				</select>
+			</div>
+
+			<div class="col col-xl-3 col-lg-12 col-md-12 col-sm-12 col-12 pb-2">
+				<button class="btn btn-danger d-inline-block mb-1 font-weight-bolder w-100" type="button" onclick="RemoveField(this)">x</button>
+			</div>
+
+		</div>
+
+	</div>
+	@if(Model.MapLayerId == 3) 
+	{
+		<label class="small">Aviso: La capa de @Model.Name contiene campos modificables.</label><br><br>
+		<div class="w-100">
+			<div class="FieldFormBase mb-4 w-100 row">
+
+				<div class="col col-xl-3 col-lg-12 col-md-12 col-sm-12 col-12 pb-2">
+					<label>Alias:</label><br>
+					<input id="MapLayerFields_0_Alias" name="MapLayerFields[0].Alias" class="form-control w-100 border-dark d-inline-block fieldClass" type="text">
+				</div>
+
+				<div class="col col-xl-3 col-lg-12 col-md-12 col-sm-12 col-12 pb-2">
+					<label>Nombre en ArcGIS:</label><br>
+					<input id="MapLayerFields_0_Name" name="MapLayerFields[0].Name" class="form-control w-100 border-dark d-inline-block fieldClass" type="text">
+				</div>
+
+				<div class="col col-xl-3 col-lg-12 col-md-12 col-sm-12 col-12 pb-2">
+				
+					<label>Tipo de Campo:</label><br>
+					<select id="MapLayerFields_0_Type" name="MapLayerFields[0].Type" class="form-control border-dark fieldClass">
+						<option value="">Seleccionar</option>
+						<option value="0">Número</option>
+						<option value="1">Texto</option>
+					</select>
+				</div>
+
+				<div class="col col-xl-3 col-lg-12 col-md-12 col-sm-12 col-12 pb-2">
+					<label>Agregar más:</label><br>
+					<button class="btn btn-primary bg-color1 mb-1 font-weight-bolder btn-add w-100" type="button" onclick="AddField()">+</button>
+				</div>
+
+			</div>
+
+			<div id="MapLayerFieldsList">
+			</div>
+		</div>
+	}
+	
+
 	<button type="button" onclick="setTab('Zone');" class="btn btn-primary bg-color1 rounded-0">
 		<i class="btn-has-text fa fa-step-backward"></i>
 		Abortar
@@ -51,12 +117,67 @@ else
 	  });
 	});
 
-	$(document).ready(function () {
-		$('.selectpicker').selectpicker();
-		$('.bs-select-all').html('Seleccionar todo');
-		$('.bs-deselect-all').html('Deseleccionar todo');
-		$("#URL").rules( "add", {
-		  url2: true
+	var FieldsCount = 1;
+	var _MapLayerId = @Model.MapLayerId;
+
+	var FieldsMax = 32;
+	var BtnAddHtml = $(".btn-add-ref").html();
+
+	var _FieldsAlias = @Html.Raw(ViewBag.MapLayerFieldsAlias);
+	var _FieldsNames = @Html.Raw(ViewBag.MapLayerFieldsNames);
+	var _FieldsTypes = @Html.Raw(ViewBag.MapLayerFieldsTypes);
+
+	function UpdateFieldsUI() {
+
+		if (FieldsCount >= FieldsMax)
+		{
+			$(".btn-add").text("Máximo " + FieldsMax + " campos");
+		}
+		else
+		{
+			$(".btn-add").text("+");
+		}
+
+		$('.fieldClass').each(function() {
+			$(this).rules('add', {
+				required: true,
+				messages: {
+					required: "Este campo es obligatorio."
+				}
+			})
 		});
+	}
+
+	function AddField()
+	{
+		if (FieldsCount < FieldsMax)
+		{
+			var html = $('#FieldTemplate').html();
+			var appendable = html.replace(/\^/g, FieldsCount);
+			$('#MapLayerFieldsList').append(appendable);
+			FieldsCount = FieldsCount + 1;
+			UpdateFieldsUI();
+		}
+	}
+
+	function RemoveField(obj) {
+		$(obj).closest('.FieldForm').remove();
+		FieldsCount = FieldsCount - 1;
+		UpdateFieldsUI();
+	}
+
+	$(document).ready(function () {
+
+		$('.applyBtn').html("Aplicar");
+		$('.cancelBtn').html("Cancelar");
+
+		for (i = 0; i < @Model.MapLayerFields.Count; i++)
+		{
+			if (i > 0) { AddField(); }
+			$('#MapLayerFields_' + i + '_Alias').val(_FieldsAlias[i]);
+			$('#MapLayerFields_' + i + '_Name').val(_FieldsNames[i]);
+			$('#MapLayerFields_' + i + '_Type').val(_FieldsTypes[i]);
+		}
+
 	});
 </script>

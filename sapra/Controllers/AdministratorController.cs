@@ -104,8 +104,7 @@ namespace sapra.Controllers
 			}
 			else
 			{
-				var user = RequestUser(userId, true);
-				return PartialView(user);
+				return PartialView(RequestUser(userId, true));
 			}
 		}
 
@@ -118,8 +117,7 @@ namespace sapra.Controllers
 			}
 			else
 			{
-				var role = RequestRole(roleId, true);
-				return PartialView(role);
+				return PartialView(RequestRole(roleId, true));
 			}
 		}
 
@@ -132,8 +130,7 @@ namespace sapra.Controllers
 			}
 			else
 			{
-				var layer = new DatabaseContext().MapLayerRepository.Where(e => e.MapLayerId == mapLayerId).SingleOrDefault();
-				return PartialView(layer);
+				return PartialView(RequestLayer(mapLayerId, true));
 			}
 		}
 
@@ -218,8 +215,26 @@ namespace sapra.Controllers
 			}
 			else
 			{
-				layer = db.MapLayerRepository.Where(e => e.MapLayerId == mapLayerId).SingleOrDefault();
+				layer = RequestLayer(mapLayerId, true);
 			}
+
+			var MapLayerFieldsAlias = new List<string>();
+			var MapLayerFieldsNames = new List<string>();
+			var MapLayerFieldsTypes = new List<int>();
+
+			if (layer.MapLayerFields != null) 
+			{
+				for (int i = 0; i < layer.MapLayerFields.Count; i++)
+				{
+					MapLayerFieldsAlias.Add(layer.MapLayerFields[i].Alias);
+					MapLayerFieldsNames.Add(layer.MapLayerFields[i].Name);
+					MapLayerFieldsTypes.Add(layer.MapLayerFields[i].Type);
+				}
+			}
+
+			ViewBag.MapLayerFieldsAlias = JsonConvert.SerializeObject(MapLayerFieldsAlias);
+			ViewBag.MapLayerFieldsNames = JsonConvert.SerializeObject(MapLayerFieldsNames);
+			ViewBag.MapLayerFieldsTypes = JsonConvert.SerializeObject(MapLayerFieldsTypes);
 
 			return PartialView("EditLayer", layer);
 		}
@@ -413,6 +428,20 @@ namespace sapra.Controllers
 					db.Entry(syncLayer).CurrentValues.SetValues(layer);
 					db.SaveChanges();
 
+					db.MapLayerFieldRepository.RemoveRange(db.MapLayerFieldRepository.Where(e => e.MapLayerId == layer.MapLayerId));
+					db.SaveChanges();
+
+					foreach (var field in layer.MapLayerFields)
+					{
+						db.MapLayerFieldRepository.Add(new MapLayerField(){ 
+							Name = field.Name, 
+							Alias = field.Alias, 
+							Type = field.Type, 
+							MapLayerId = layer.MapLayerId
+						});
+					}
+					db.SaveChanges();
+
 					TempData["response"] = "Se ha modificado la capa correctamente.";
 				}
 
@@ -431,6 +460,5 @@ namespace sapra.Controllers
 			TempData["response"] = "Se ha actualizado correctamente la información.";
 			return RedirectToAction("Panel", new { tab = "General" });
 		}
-
 	}
 }

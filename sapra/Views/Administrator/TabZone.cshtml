@@ -25,9 +25,12 @@
 					<button onclick="EditLayer(@layer.MapLayerId)" class="btn btn-primary bg-color1 rounded-0">
 						<i class="fa fa-edit"></i>
 					</button>
-					<button onclick="DeleteLayer(@layer.MapLayerId)" class="btn btn-danger rounded-0">
-						<i class="fa fa-remove"></i>
-					</button>
+					@if (layer.MapLayerId != 3) 
+					{
+						<button onclick="DeleteLayer(@layer.MapLayerId)" class="btn btn-danger rounded-0">
+							<i class="fa fa-remove"></i>
+						</button>
+					}
 				</td>
 			</tr>
 		}

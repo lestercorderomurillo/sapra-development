@@ -19,6 +19,8 @@ namespace sapra.App
 
         public DbSet<MapLayer> MapLayerRepository { get; set; }
 
+        public DbSet<MapLayerField> MapLayerFieldRepository { get; set; }
+
         public DbSet<Role> RoleRepository { get; set; }
 
         public DbSet<Role_Permission> RolePermissionRepository { get; set; }
@@ -34,6 +36,7 @@ namespace sapra.App
 
             // Composed Keys
             modelBuilder.Entity<UserPhone>().HasKey(e => new { e.UserId, e.Number });
+            modelBuilder.Entity<MapLayerField>().HasKey(e => new { e.MapLayerId, e.Name });
             modelBuilder.Entity<Role>().HasKey(e => e.RoleId );
             modelBuilder.Entity<Role_Permission>().HasKey(e => new { e.RoleId, e.PermissionName });
 
@@ -52,6 +55,10 @@ namespace sapra.App
             modelBuilder.Entity<UserInfo>()
                 .HasMany(e => e.PhoneNumbers)
                 .WithOne(e => e.UserInfo);
+
+            modelBuilder.Entity<MapLayer>()
+                .HasMany(e => e.MapLayerFields)
+                .WithOne(e => e.MapLayer);
 
         }
 

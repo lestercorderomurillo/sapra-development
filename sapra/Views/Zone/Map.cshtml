@@ -29,7 +29,34 @@
 <script>
     displayLayout();
 
-    require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/widgets/Search", "esri/widgets/LayerList"], function (Map, MapView, FeatureLayer, Search, LayerList) {
+    require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/Layer",
+        "esri/layers/FeatureLayer",
+        "esri/widgets/Search",
+        "esri/widgets/LayerList",
+
+        ],
+
+        function (Map, MapView, Layer, FeatureLayer, Search, LayerList) {
+
+            function dialogFunction(feature) {
+                var div = document.createElement("div");
+
+                /*foreach (MapLayerField field in Model.Layers[0].MapLayerFields) 
+                {
+                :div.innerHTML += "field.Name: " + feature.graphic.attributes.field.Name + "<br>";
+                }*/
+
+                var btnText = "Consultar";
+                
+                div.innerHTML += "<br>" + 
+                "<button type='submit' class='btn btn-primary bg-color1 rounded-0'><i class='btn-has-text fa fa-save'></i>" +
+                    btnText + "<br>" + 
+                "</button>";
+                return div;
+            };
         
         var map = new Map({
             basemap: "osm"
@@ -49,11 +76,38 @@
 
 		// for each layer of the system, add layer
 		// add to the controls to switch beetwen layers
-        for (x = 0; x < layersURL.length; x++)
-        {
+        for (x = 0; x < layersURL.length; x++) {
             var layer = new FeatureLayer({
-                url: layersURL[x]
+                url: layersURL[x],
+                outFields: ["*"]
             });
+
+            if (x == (layersURL.length - 1)) {
+                // Catastro layer is a "special one"..
+
+                var popupTemplate = {
+                // autocasts as new PopupTemplate()
+                title: "Nombre: {N_PROV}",
+                outFields: ["*"],
+                content: dialogFunction,
+                fieldInfos: [
+                    {
+                        fieldName: "N_PROV",
+                        format: {
+                        }
+                    }, {
+                        fieldName: "AREA",
+                        format: {
+                            digitSeparator: true,
+                            places: 2
+                        }
+                    }]
+                };
+
+                layer.popupTemplate = popupTemplate;
+
+            }
+
             map.add(layer);
         }
 
@@ -62,7 +116,13 @@
             container: "mapDiv",
             map: map,
             center: [-84.217, 10.012],
-            zoom: 14
+            zoom: 14,
+            highlightOptions: {
+                color: "orange"
+            },
+            popup: { 
+                autoOpenEnabled: true 
+            } 
         });
 
         // Seach Widget
@@ -114,12 +174,11 @@
         ]);
 
         view.when(function () {
-
             setTimeout(function(){
-                 $('.esri-search__input').attr("placeholder", "Buscar lugares o direcciones...");
+                $('.esri-search__input').attr("placeholder", "Buscar lugares o direcciones...");
             }, 1000);
 
-        });
+        }); 
 
     });
 

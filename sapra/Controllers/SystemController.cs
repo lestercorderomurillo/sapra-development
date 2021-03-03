@@ -55,13 +55,29 @@ namespace sapra.Controllers
 			return user;
 		}
 
+		public MapLayer RequestLayer(int layerId, bool includeExtraInformation = false)
+		{
+			var db = new DatabaseContext();
+			var layer = db.MapLayerRepository.Where(e => e.MapLayerId == layerId).SingleOrDefault();
+
+			if (includeExtraInformation)
+			{
+				var fields = db.MapLayerFieldRepository.Where(e => e.MapLayerId == layerId).ToList();
+				layer.MapLayerFields = fields;
+			}
+			return layer;
+		}
+
 		[HttpPost]
 		public List<MapLayer> RequestAllMapLayers(int page = 0)
 		{
 			var pp = 8;
 			var offset = page * pp;
 			var db = new DatabaseContext();
-			return db.MapLayerRepository.Skip(offset).Take(pp).ToList();
+			var list = db.MapLayerRepository.Skip(offset).Take(pp).ToList();
+			var found = list.Find(e => e.MapLayerId == 3);
+			found.MapLayerFields = RequestLayer(found.MapLayerId, true).MapLayerFields;
+			return list;
 		}
 
 		[HttpPost]

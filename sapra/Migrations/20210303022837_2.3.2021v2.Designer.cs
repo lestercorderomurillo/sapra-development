@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using sapra.App;
 
 namespace sapra.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210303022837_2.3.2021v2")]
+    partial class _232021v2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,7 +40,7 @@ namespace sapra.Migrations
 
                     b.HasKey("MapLayerId");
 
-                    b.ToTable("MapLayerRepository");
+                    b.ToTable("MapLayer");
                 });
 
             modelBuilder.Entity("sapra.Models.MapLayerField", b =>
@@ -59,7 +61,7 @@ namespace sapra.Migrations
 
                     b.HasKey("MapLayerId", "Name");
 
-                    b.ToTable("MapLayerFieldRepository");
+                    b.ToTable("MapLayerField");
                 });
 
             modelBuilder.Entity("sapra.Models.Role", b =>
@@ -202,17 +204,6 @@ namespace sapra.Migrations
                     b.ToTable("UserPhoneRepository");
                 });
 
-            modelBuilder.Entity("sapra.Models.MapLayerField", b =>
-                {
-                    b.HasOne("sapra.Models.MapLayer", "MapLayer")
-                        .WithMany("MapLayerFields")
-                        .HasForeignKey("MapLayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MapLayer");
-                });
-
             modelBuilder.Entity("sapra.Models.Role_Permission", b =>
                 {
                     b.HasOne("sapra.Models.Role", "Role")
@@ -255,11 +246,6 @@ namespace sapra.Migrations
                         .IsRequired();
 
                     b.Navigation("UserInfo");
-                });
-
-            modelBuilder.Entity("sapra.Models.MapLayer", b =>
-                {
-                    b.Navigation("MapLayerFields");
                 });
 
             modelBuilder.Entity("sapra.Models.Role", b =>
