@@ -106,9 +106,23 @@ button.accept-policy {
     border-color: rgb(196,196,196) !important;
 }
 
+.h-100plus {
+    height: 100%;
+    max-height: 300px;
+}
+
+.gradient-right {
+    height: 100%;
+    width: 1px;
+    background-image: -webkit-gradient(linear, 0 0, 20% 0, from(#9A9797), to(transparent));
+    background-image: -webkit-linear-gradient(top, #9A9797, transparent);
+    background-image: -moz-linear-gradient(top, #9A9797, transparent);
+    background-image: -o-linear-gradient(top, #9A9797, transparent);
+}
+
 .gradient-top {
     height: 1px;
-    width: 100%
+    width: 100%;
     background-image: -webkit-gradient(linear, 0 0, 100% 0, from(#000), to(transparent));
     background-image: -webkit-linear-gradient(left, #000, transparent);
     background-image: -moz-linear-gradient(left, #000, transparent);

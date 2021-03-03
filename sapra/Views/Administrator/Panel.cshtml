@@ -1,5 +1,6 @@
 ﻿@{
 	ViewData["Title"] = "Administración";
+	var resultTab = ViewBag.Tab;
 }
 <script>
 	displayLayout();
@@ -8,22 +9,40 @@
 	<br>
 	<div class="row no-gutters">
 		<div class="col col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3 text-uppercase">
+			@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ADMINISTRACION_GENERAL)) 
+			{
 			<button id="General" class="tab light border border-gray w-100 p-3 rounded-left" onclick="setTab('General');">
 				<div class="text-left font-weight-bold">General</div>
 				<div class="text-left small">Permite realizar ajustes generales</div>
 			</button>
+			}
+			else if(resultTab == "General") { resultTab = "Roles"; }
+			@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ADMINISTRACION_ROLES)) 
+			{
 			<button id="Roles" class="tab light border border-gray w-100 p-3 rounded-left" onclick="setTab('Roles');">
 				<div class="text-left font-weight-bold">Roles</div>
 				<div class="text-left small">Permite administrar roles y permisos</div>
 			</button>
+			}
+			else if(resultTab == "Roles") { resultTab = "Users"; }
+			@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ADMINISTRACION_USUARIOS)) 
+			{
 			<button id="Users" class="tab light border border-gray w-100 p-3 rounded-left" onclick="setTab('Users');">
 				<div class="text-left font-weight-bold">Usuarios</div>
 				<div class="text-left small">Permite administrar usuarios y su información</div>
 			</button>
-			<button id="Zone" class="tab light border border-gray w-100 p-3 rounded-left mb-2" onclick="setTab('Zone');">
+			}
+			else if(resultTab == "Users") { resultTab = "Zone"; }
+			@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ADMINISTRACION_CAPAS)) 
+			{
+			<button id="Zone" class="tab light border border-gray w-100 p-3 rounded-left" onclick="setTab('Zone');">
 				<div class="text-left font-weight-bold">Mapa ArcGIS</div>
 				<div class="text-left small">Permite administrar capas del mapa</div>
 			</button>
+			}
+			<div class="w-100 h-100plus">
+				<div class="float-right text-right gradient-right"></div>
+			</div>
 		</div>
 		<div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
 			<div class="gradient-top"></div>
@@ -36,7 +55,7 @@
 <script>
 
 	$(document).ready(function () {
-		setTab('@ViewBag.Tab');
+		setTab('@resultTab');
 	});
 
 	function setTab(tabName) {

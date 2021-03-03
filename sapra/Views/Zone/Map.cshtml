@@ -28,7 +28,6 @@
 <div id="mapDiv" class="map"></div>
 <script>
     displayLayout();
-
     require([
         "esri/Map",
         "esri/views/MapView",
@@ -36,11 +35,8 @@
         "esri/layers/FeatureLayer",
         "esri/widgets/Search",
         "esri/widgets/LayerList",
-
         ],
-
         function (Map, MapView, Layer, FeatureLayer, Search, LayerList) {
-
             function dialogFunction(feature) {
                 var div = document.createElement("div");
                 var flexElement;
@@ -49,15 +45,26 @@
                     @:flexElement = decodeHtml("@field.Name");
                     @:if (feature.graphic.attributes[flexElement] != undefined && feature.graphic.attributes[flexElement] != 0)
                     {    
-                    @:div.innerHTML += "@field.Alias: " + feature.graphic.attributes[flexElement] + "<br>";
+                        @if(field.Type == MapLayerField.NumberField)
+					    {
+                            @:div.innerHTML += "<b>@field.Alias:</b> " + feature.graphic.attributes[flexElement].toFixed(0) + "<br>";
+					    }
+					    else if(field.Type == MapLayerField.DoubleField)
+                        {
+                        @:if (Math.round(feature.graphic.attributes[flexElement]) !== feature.graphic.attributes[flexElement]){
+                            @:div.innerHTML += "<b>@field.Alias:</b> " + feature.graphic.attributes[flexElement].toFixed(2) + "<br>";
+                        @:}else {
+                            @:div.innerHTML += "<b>@field.Alias:</b> " + feature.graphic.attributes[flexElement] + "<br>";
+                        @:}
+                        
+                        }
                     }
                 }
-                var btnText = "Consultar";
-                
+                ;
                 div.innerHTML += "<br>" + 
                 "<button type='submit' class='btn btn-primary bg-color1 rounded-0'><i class='btn-has-text fa fa-search'></i>" +
-                    btnText + "<br>" + 
-                "</button>";
+                    "Consultar" + "<br>" + 
+                    "</button>";
                 return div;
             };
         
@@ -89,22 +96,22 @@
                 // Catastro layer is a "special one"..
 
                 var popupTemplate = {
-                // autocasts as new PopupTemplate()
-                title: "Catastro",
-                outFields: ["*"],
-                content: dialogFunction,
-                fieldInfos: [
-                    {
-                        fieldName: "N_PROV",
-                        format: {
+                    // autocasts as new PopupTemplate()
+                    title: "Catastro",
+                    outFields: ["*"],
+                    content: dialogFunction,
+                    fieldInfos:
+                        [
+                        @foreach (MapLayerField field in Model.Layers[0].MapLayerFields)
+					    { 
+                            @:{
+                            @:  fieldName: decodeHtml("@field.Name")
+                            @if(field.Type == MapLayerField.NumberField){
+                            @:  ,format: { digitSeparator: true, places: 2 }
+                            } 
+                            @:},
                         }
-                    }, {
-                        fieldName: "AREA",
-                        format: {
-                            digitSeparator: true,
-                            places: 2
-                        }
-                    }]
+                    ]
                 };
 
                 layer.popupTemplate = popupTemplate;
@@ -121,7 +128,9 @@
             center: [-84.217, 10.012],
             zoom: 14,
             highlightOptions: {
-                color: "orange"
+                color: "orange",
+                haloOpacity: 0.9,
+                fillOpacity: 0.2
             },
             popup: { 
                 autoOpenEnabled: true 
@@ -179,7 +188,7 @@
         view.when(function () {
             setTimeout(function(){
                 $('.esri-search__input').attr("placeholder", "Buscar lugares o direcciones...");
-            }, 1000);
+            }, 750);
 
         }); 
 

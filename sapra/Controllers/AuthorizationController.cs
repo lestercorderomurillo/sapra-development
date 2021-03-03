@@ -152,9 +152,12 @@ namespace sapra.Controllers
 			return View(model);
 		}
 
-		public bool isAllowed(Role role, Permission permission) 
+		public static bool IsAllowed(int roleId, Permission permission) 
 		{
-			return false;
+			var obj = new DatabaseContext().RolePermissionRepository.Where(e => e.RoleId == roleId).
+			Where(e => e.PermissionName == permission.ToString() ).SingleOrDefault();
+
+			return (obj != null);
 		}
 	}
 }

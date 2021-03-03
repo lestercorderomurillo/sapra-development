@@ -38,12 +38,18 @@
 						</li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
-						<li class="nav-item">
-							<a class="nav-link text-white" asp-area="" asp-controller="Zone" asp-action="Map">Mapa ArcGIS</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-white" asp-area="" asp-controller="Administrator" asp-action="Panel">Administración</a>
-						</li>
+						@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ACCESO_MAPA_ARCGIS)) 
+						{
+							<li class="nav-item">
+								<a class="nav-link text-white" asp-area="" asp-controller="Zone" asp-action="Map">Mapa ArcGIS</a>
+							</li>
+						}
+						@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ACCESO_ADMINISTRACION)) 
+						{
+							<li class="nav-item">
+								<a class="nav-link text-white" asp-area="" asp-controller="Administrator" asp-action="Panel">Administración</a>
+							</li>
+						}
 					</ul>
 				</div>
 

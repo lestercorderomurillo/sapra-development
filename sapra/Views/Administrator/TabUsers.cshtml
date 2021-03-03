@@ -1,10 +1,13 @@
 ﻿@model sapra.ViewModels.UserListViewModel
 <h4>Módulo de Usuarios</h4><br>
 <div class="">
+	@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.USUARIOS_CREAR)) 
+	{
 	<button type="button" onclick="AddUser()" class="btn btn-primary bg-color1 rounded-0 mb-4">
 		<i class="btn-has-text fa fa-user"></i>
 		Registrar nuevo usuario en el sistema
-	</button>
+	</button>		
+	}
 	<partial name="~/Views/Shared/Response.cshtml" for="Response">
 	<h5 class="pt-2">Busqueda de usuarios existentes en el sistema </h5><br>
 	<div class="row">
@@ -38,12 +41,22 @@
                     <button onclick="ViewUser(@user.UserId);" class="btn btn-primary bg-color1 rounded-0">
                         <i class="fa fa-search"></i>
                     </button>
-                    <button onclick="EditUser(@user.UserId)" class="btn btn-primary bg-color1 rounded-0">
-                        <i class="fa fa-edit"></i>
-                    </button>
-                    <button onclick="DeleteUser(@user.UserId)" class="btn btn-danger rounded-0">
-                        <i class="fa fa-remove"></i>
-                    </button>
+					@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.USUARIOS_EDITAR)) 
+					{
+					<button onclick="EditUser(@user.UserId)" class="btn btn-primary bg-color1 rounded-0">
+						<i class="fa fa-edit"></i>
+					</button>
+					}
+                    
+					@if (Model.Users.Count > 1) 
+					{
+						@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.USUARIOS_ELIMINAR))
+						{ 
+						<button onclick="DeleteUser(@user.UserId)" class="btn btn-danger rounded-0">
+							<i class="fa fa-remove"></i>
+						</button>
+						}
+					}
                 </td>
 			</tr>
 		}

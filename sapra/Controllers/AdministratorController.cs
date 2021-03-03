@@ -231,6 +231,10 @@ namespace sapra.Controllers
 					MapLayerFieldsTypes.Add(layer.MapLayerFields[i].Type);
 				}
 			}
+			else 
+			{
+				layer.MapLayerFields = new List<MapLayerField>();
+			}
 
 			ViewBag.MapLayerFieldsAlias = JsonConvert.SerializeObject(MapLayerFieldsAlias);
 			ViewBag.MapLayerFieldsNames = JsonConvert.SerializeObject(MapLayerFieldsNames);
@@ -417,6 +421,19 @@ namespace sapra.Controllers
 					/* INSERT */
 					db.MapLayerRepository.Add(layer);
 					db.SaveChanges();
+
+					foreach (var field in layer.MapLayerFields)
+					{
+						db.MapLayerFieldRepository.Add(new MapLayerField()
+						{
+							Name = field.Name,
+							Alias = field.Alias,
+							Type = field.Type,
+							MapLayerId = layer.MapLayerId
+						});
+					}
+					db.SaveChanges();
+
 					TempData["response"] = "Se ha agregado la capa correctamente.";
 				}
 				else

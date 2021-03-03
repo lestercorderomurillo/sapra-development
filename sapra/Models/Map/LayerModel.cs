@@ -27,8 +27,10 @@ namespace sapra.Models
 	}
 	public class MapLayerField
 	{
-		public static int StringField = 0;
-		public static int NumberField = 1;
+
+		public static int NumberField = 0;
+		public static int StringField = 1;
+		public static int DoubleField = 2;
 
 		[Required]
 		public int MapLayerId { get; set; }

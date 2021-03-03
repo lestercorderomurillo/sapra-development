@@ -13,6 +13,8 @@ namespace sapra.Models
 		
 		public int ParentRoleId { get; set; }
 
+		public bool ReadOnly { get; set; }
+
 		[Required]
 		[StringLength(24, MinimumLength = 4)]
 		public string Name { get; set; }

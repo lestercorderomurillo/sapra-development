@@ -1,10 +1,14 @@
 ﻿@model sapra.ViewModels.RoleListViewModel
 <h4>Módulo de Roles</h4><br>
 <div>
+	@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ROLES_CREAR)) 
+	{
 	<button onclick="AddRole()" class="btn btn-primary bg-color1 rounded-0 mb-4">
 		<i class="btn-has-text fa fa-address-book"></i>
 		Registrar nuevo rol en el sistema
-	</button>
+	</button>		
+	}
+	
 	<partial name="~/Views/Shared/Response.cshtml" for="Response">
 	<h5 class="pt-3">Roles existentes en el sistema </h5><br>
 	<table class="w-100 table">
@@ -27,17 +31,26 @@
 					<button onclick="ViewRole(@role.RoleId);" class="btn btn-primary bg-color1 rounded-0">
 						<i class="fa fa-search"></i>
 					</button>
-					<button onclick="EditRole(@role.RoleId)" class="btn btn-primary bg-color1 rounded-0">
-						<i class="fa fa-edit"></i>
-					</button>
+					@if (!role.ReadOnly) 
+					{
+						@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ROLES_EDITAR))
+						{ 
+						<button onclick="EditRole(@role.RoleId)" class="btn btn-primary bg-color1 rounded-0">
+							<i class="fa fa-edit"></i>
+						</button>
+						}
+					}
 					@if(allow)
 					{
+						@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ROLES_ELIMINAR))
+						{ 
 						<button onclick="DeleteRole(@role.RoleId)" class="btn btn-danger rounded-0">
 							<i class="fa fa-remove"></i>
 						</button>
+						}
 					}
 					else
-					{ 
+					{
 						allow = true;
 					}
 				</td>

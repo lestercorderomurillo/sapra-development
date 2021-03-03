@@ -1,10 +1,13 @@
 ﻿@model sapra.ViewModels.MapLayerListViewModel
 <h4>Módulo de Zonificación</h4><br>
 <div>
+	@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.CAPAS_CREAR))
+	{ 
 	<button onclick="AddLayer()" class="btn btn-primary bg-color1 rounded-0 mb-4">
 		<i class="btn-has-text fa fa-map"></i>
 		Registrar nueva capa en el sistema
 	</button>
+	}
 	<partial name="~/Views/Shared/Response.cshtml" for="Response">
 	<h5 class="pt-3">Capas existentes en el mapa ArcGis </h5><br>
 	<label class="small">Aviso: La capa principal contiene campos modificables.</label><br><br>
@@ -31,14 +34,20 @@
 					<button onclick="ViewLayer(@layer.MapLayerId);" class="btn btn-primary bg-color1 rounded-0">
 						<i class="fa fa-search"></i>
 					</button>
+					@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.CAPAS_EDITAR))
+					{ 
 					<button onclick="EditLayer(@layer.MapLayerId)" class="btn btn-primary bg-color1 rounded-0">
 						<i class="fa fa-edit"></i>
 					</button>
+					}
 					@if(layer.Name != sapra.Controllers.SystemController.LoadSettings().BaseLayer)
 					{
-						<button onclick="DeleteLayer(@layer.MapLayerId)" class="btn btn-danger rounded-0">
+						@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.CAPAS_ELIMINAR))
+						{ 
+							<button onclick="DeleteLayer(@layer.MapLayerId)" class="btn btn-danger rounded-0">
 							<i class="fa fa-remove"></i>
-						</button>
+							</button>
+						}
 					}
 				</td>
 			</tr>
