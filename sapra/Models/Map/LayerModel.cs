@@ -8,6 +8,9 @@ namespace sapra.Models
 	public class MapLayer
 	{
 		[Required]
+		public byte Visible { get; set; }
+
+		[Required]
 		public int MapLayerId { get; set; }
 
 		[Required]

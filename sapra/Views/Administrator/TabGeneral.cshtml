@@ -8,7 +8,8 @@
 	<input asp-for="Subtitle" type="text" class="form-control border-dark mw-450" value="@Model.Subtitle"><br>
 	<label>Dirección URL de ArcGIS Server:</label><br>
 	<input asp-for="ArcGISURL" type="text" class="form-control border-dark mw-450" value="@Model.ArcGISURL"><br>
-
+	<label>Nombre de la capa principal:</label><br>
+	<input asp-for="BaseLayer" type="text" class="form-control border-dark mw-450" value="@Model.BaseLayer"><br>
 	<button type="submit" class="btn btn-primary bg-color1 rounded-0">
 		<i class="btn-has-text fa fa-save"></i>
 		Guardar Cambios
@@ -33,12 +34,18 @@
 					required: true,
 					minlength: 8,
 					maxlength: 256
+				},
+				BaseLayer: {
+					required: true,
+					minlength: 4,
+					maxlength: 256
 				}
 			},
 		messages: {
 			Title: "Debe tener entre 8 y 64 letras.",
 			Subtitle: "Debe tener entre 8 y 64 letras.",
-			ArcGISURL: "Debe ser una URL válida."
+			ArcGISURL: "Debe ser una URL válida.",
+			BaseLayer: "Debe tener entre 4 y 256 letras.",
 		},
 		submitHandler: function(form) {
 			form.submit();

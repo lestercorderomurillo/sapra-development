@@ -151,5 +151,10 @@ namespace sapra.Controllers
 			model.Response = new ServerResponseViewModel("Ha ocurrido un error.", ResponseType.Error);
 			return View(model);
 		}
+
+		public bool isAllowed(Role role, Permission permission) 
+		{
+			return false;
+		}
 	}
 }

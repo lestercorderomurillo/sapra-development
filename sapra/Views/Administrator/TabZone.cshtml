@@ -7,6 +7,7 @@
 	</button>
 	<partial name="~/Views/Shared/Response.cshtml" for="Response">
 	<h5 class="pt-3">Capas existentes en el mapa ArcGis </h5><br>
+	<label class="small">Aviso: La capa principal contiene campos modificables.</label><br><br>
 	<table class="w-75 table">
 		<tr>
 			<th>Nombre</th>
@@ -17,6 +18,14 @@
 			<tr>
 				<td>
 					@layer.Name
+					@if(layer.Name == sapra.Controllers.SystemController.LoadSettings().BaseLayer) 
+					{
+						<div style="display: inline-block;" class="alert-dark small text-uppercase rounded p-2 m-1">Capa Principal</div>	
+					}
+					@if (layer.Visible == 1) 
+					{
+						<div class="fa fa-eye-slash"></div>
+					}
 				</td>
 				<td style="min-width: 160px">
 					<button onclick="ViewLayer(@layer.MapLayerId);" class="btn btn-primary bg-color1 rounded-0">
@@ -25,7 +34,7 @@
 					<button onclick="EditLayer(@layer.MapLayerId)" class="btn btn-primary bg-color1 rounded-0">
 						<i class="fa fa-edit"></i>
 					</button>
-					@if (layer.MapLayerId != 3) 
+					@if(layer.Name != sapra.Controllers.SystemController.LoadSettings().BaseLayer)
 					{
 						<button onclick="DeleteLayer(@layer.MapLayerId)" class="btn btn-danger rounded-0">
 							<i class="fa fa-remove"></i>

@@ -6,16 +6,32 @@
 	<label>@Model.Name</label><br><br>
 	<label class="font-weight-bolder">Dirección URL de la capa:</label><br>
 	<label>@Model.URL</label><br><br>
+	@if (Model.Visible == 0) {
+		<label class="font-weight-bolder">Esta capa es <b>VISIBLE</b> en el Mapa ArcGIS</label><br><br>
+	}
+	else { 
+		<label class="font-weight-bolder">Esta capa esta <b>OCULTA</b> en el Mapa ArcGIS</label><br><br>
+	}
+	
 	@if(Model.MapLayerFields.Count > 0) 
 	{
-		<label class="font-weight-bolder">Campos para esta capa:</label><br>
-		@foreach(MapLayerField field in Model.MapLayerFields)
-		{
-			<div style="display: inline-block;" class="alert-dark small text-uppercase rounded p-2 m-1">
-				<b>@field.Alias</b>: @field.Name 
-			</div>
+		@if(Model.Name == sapra.Controllers.SystemController.LoadSettings().BaseLayer)
+		{ 
+			<label class="font-weight-bolder">Campos para esta capa:</label><br>
+			@foreach(MapLayerField field in Model.MapLayerFields)
+			{
+				<div style="display: inline-block;" class="alert-dark small text-uppercase rounded p-2 m-1">
+					<b>@field.Alias</b>: @field.Name 
+				</div>
+			}
+			<br><br>
 		}
-		<br><br>
+		else 
+		{
+			<label class="small">Campos deshabilitados. Este campo debe ser principal para verlos/editarlos.</label><br><br>
+		}
+
+		
 	}
 	<button class="btn btn-primary bg-color1 rounded-0" 
 	onclick="setTab('Zone');">

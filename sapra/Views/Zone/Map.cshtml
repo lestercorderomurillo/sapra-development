@@ -43,16 +43,19 @@
 
             function dialogFunction(feature) {
                 var div = document.createElement("div");
-
-                /*foreach (MapLayerField field in Model.Layers[0].MapLayerFields) 
+                var flexElement;
+                @foreach (MapLayerField field in Model.Layers[0].MapLayerFields) 
                 {
-                :div.innerHTML += "field.Name: " + feature.graphic.attributes.field.Name + "<br>";
-                }*/
-
+                    @:flexElement = decodeHtml("@field.Name");
+                    @:if (feature.graphic.attributes[flexElement] != undefined && feature.graphic.attributes[flexElement] != 0)
+                    {    
+                    @:div.innerHTML += "@field.Alias: " + feature.graphic.attributes[flexElement] + "<br>";
+                    }
+                }
                 var btnText = "Consultar";
                 
                 div.innerHTML += "<br>" + 
-                "<button type='submit' class='btn btn-primary bg-color1 rounded-0'><i class='btn-has-text fa fa-save'></i>" +
+                "<button type='submit' class='btn btn-primary bg-color1 rounded-0'><i class='btn-has-text fa fa-search'></i>" +
                     btnText + "<br>" + 
                 "</button>";
                 return div;
@@ -87,7 +90,7 @@
 
                 var popupTemplate = {
                 // autocasts as new PopupTemplate()
-                title: "Nombre: {N_PROV}",
+                title: "Catastro",
                 outFields: ["*"],
                 content: dialogFunction,
                 fieldInfos: [

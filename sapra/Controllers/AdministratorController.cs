@@ -85,7 +85,7 @@ namespace sapra.Controllers
 		public IActionResult TabZone()
 		{
 			if (new SessionController().GetSessionRole(HttpContext) > 0) {
-				var model = new MapLayerListViewModel(RequestAllMapLayers())
+				var model = new MapLayerListViewModel(RequestAllMapLayers(0, false))
 				{
 					Response = GetResponseFromRedirect()
 				};

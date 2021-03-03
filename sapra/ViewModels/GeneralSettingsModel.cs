@@ -8,10 +8,13 @@ namespace sapra.ViewModels
 
 		public string ArcGISURL { get; set; }
 
+		public string BaseLayer { get; set; }
+
 		public GeneralSettingsModel()
 		{
 			Title = "Sistema de Administración";
 			Subtitle = "Plan Regulador de Alajuela";
+			BaseLayer = "Catastro";
 			ArcGISURL = "http://www.google.com";
 		}
 	}

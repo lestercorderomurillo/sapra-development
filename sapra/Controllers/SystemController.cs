@@ -69,14 +69,27 @@ namespace sapra.Controllers
 		}
 
 		[HttpPost]
-		public List<MapLayer> RequestAllMapLayers(int page = 0)
+		public List<MapLayer> RequestAllMapLayers(int page = 0, bool requestOnlyVisible = true)
 		{
 			var pp = 8;
 			var offset = page * pp;
 			var db = new DatabaseContext();
-			var list = db.MapLayerRepository.Skip(offset).Take(pp).ToList();
-			var found = list.Find(e => e.MapLayerId == 3);
-			found.MapLayerFields = RequestLayer(found.MapLayerId, true).MapLayerFields;
+			var list = new List<MapLayer>();
+
+			if (requestOnlyVisible) 
+			{
+				list = db.MapLayerRepository.Where(e => e.Visible == 0).Skip(offset).Take(pp).ToList();
+			}
+			else 
+			{
+				list = db.MapLayerRepository.Skip(offset).Take(pp).ToList();
+			}
+
+			var found = list.Find(e => e.Name == LoadSettings().BaseLayer);
+			if(found != null) 
+			{
+				found.MapLayerFields = RequestLayer(found.MapLayerId, true).MapLayerFields;
+			}
 			return list;
 		}
 
@@ -165,14 +178,14 @@ namespace sapra.Controllers
 		public static IHostingEnvironment env = Startup.RootAccess.Environment;
 		public static string webRoot = env.WebRootPath;
 
-		public void SaveSettings(GeneralSettingsModel model) 
+		public static void SaveSettings(GeneralSettingsModel model) 
 		{
 			var file = System.IO.Path.Combine(webRoot, fileName);
 			string json = JsonConvert.SerializeObject(model);
 			System.IO.File.WriteAllText(file, json);
 		}
 
-		public GeneralSettingsModel LoadSettings()
+		public static GeneralSettingsModel LoadSettings()
 		{
 			var file = System.IO.Path.Combine(webRoot, fileName);
 			var json = System.IO.File.ReadAllText(file);
