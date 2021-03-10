@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{ 
+	var userId = sapra.Controllers.SessionController.GetSessionVariable(Context, "UserId");
+	var user   = sapra.Controllers.SystemController.RequestUser(userId, false);
+
+}
+<!DOCTYPE html>
 <html class="full" lang="en">
 <head>
 	<meta charset="utf-8" />
@@ -32,19 +37,25 @@
 					<ul class="nav navbar-nav ml-auto">
 						<li class="nav-item">
 							<a class="nav-link text-white text-uppercase" asp-area="" asp-controller="Authorization" asp-action="Logout">
+								Bienvenido, @user.UserInfo.FirstName + @user.UserInfo.LastName
+								<i class="fa fa-address-card navbar-customIcon"></i>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-white text-uppercase" asp-area="" asp-controller="Authorization" asp-action="Logout">
 								Salir
 								<i class="fa fa-sign-out navbar-customIcon"></i>
 							</a>
 						</li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
-						@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ACCESO_MAPA_ARCGIS)) 
+						@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.ACCESO_MAPA_ARCGIS))
 						{
 							<li class="nav-item">
 								<a class="nav-link text-white" asp-area="" asp-controller="Zone" asp-action="Map">Mapa ArcGIS</a>
 							</li>
 						}
-						@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ACCESO_ADMINISTRACION)) 
+						@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.ACCESO_ADMINISTRACION))
 						{
 							<li class="nav-item">
 								<a class="nav-link text-white" asp-area="" asp-controller="Administrator" asp-action="Panel">Administración</a>

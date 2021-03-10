@@ -64,21 +64,22 @@ namespace sapra.App
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) {}
 
-        public DatabaseContext(){ 
+        public DatabaseContext()
+        { 
             OnConfiguring(new DbContextOptionsBuilder());
-            Connection.Open();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
 		{
-			options.UseSqlServer(Connection).EnableSensitiveDataLogging().EnableDetailedErrors();
+			options.UseSqlServer(Connection).EnableDetailedErrors();
 		}
 
         public void DetachAllEntities()
 	    {
 		    var changedEntriesCopy = ChangeTracker.Entries();
 
-		    foreach (var entry in changedEntriesCopy){ 
+		    foreach (var entry in changedEntriesCopy)
+            { 
 			    entry.State = EntityState.Detached;
 		    }
 	    }

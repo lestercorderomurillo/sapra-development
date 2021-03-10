@@ -44,6 +44,13 @@ namespace sapra
 			services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(ConnectionString));
 			services.AddDistributedMemoryCache();
 
+			services.AddCors(cors => cors.AddPolicy("Policy", builder =>
+			{
+				builder.AllowAnyOrigin()
+					   .AllowAnyMethod()
+					   .AllowAnyHeader();
+			}));
+
 			services.AddSession(options => {
 				options.IdleTimeout = TimeSpan.FromMinutes(8);
 				options.Cookie.IsEssential = true;

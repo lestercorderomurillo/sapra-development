@@ -1,7 +1,42 @@
 ﻿@model sapra.ViewModels.MapLayerListViewModel
 @{
-	ViewData["Title"] = "Zonificación";
+	ViewData["Title"] = "Mapa de ArcGIS";
 }
+<script>
+    var fieldsName = [];
+    var fieldsAlias = [];
+    var fieldsType = [];
+
+    @foreach (MapLayerField field in Model.Layers[0].MapLayerFields) 
+    {
+    @:fieldsName.push(decodeHtml("@field.Name"));
+    @:fieldsAlias.push("@field.Alias");
+    @:fieldsType.push("@field.Type");
+    }
+
+        function queryFunction()
+        {
+            /*var div = document.createElement("div");;
+            var query = featureLayer.createQuery();
+
+            query.where = "OBJECTID = " + OBJECTID;
+            //query.outFields = [ "STATE_NAME", "COUNTY_NAME", "POPULATION", "(POPULATION / AREA) as 'POP_DENSITY'" ];
+            query.outFields = ["STATE_NAME", "COUNTAliasY_NAME", "POPULATION", "(POPULATION / AREA) as 'POP_DENSITY'"];
+
+            */
+            /*featureLayer.queryFeatures(query)
+                .then(function(response){
+                    // returns a feature set with features containing the following attributes
+                    // STATE_NAME, COUNTY_NAME, POPULATION, POP_DENSITY
+            });
+
+
+            $('#area-0').text(name);*/
+            $('#queryDiv').show();
+            $('#mapDiv').hide();
+        }
+
+</script>
 <style>
     .map {
 	    padding: 0;
@@ -26,8 +61,40 @@
 </style>
 
 <div id="mapDiv" class="map"></div>
+<div id="queryDiv" class="container">
+    <br><br>
+    <h4>Consultar información sobre un Area</h4><br>
+    <div class="form-group">
+
+        <div id="content" class="w-100 h-100">
+        </div>
+
+	    <!-- /*<label class="font-weight-bolder">Test:</label><br>
+	    <label id="area-0">{ VALUE }</label><br><br>
+
+        <label class="font-weight-bolder">Este area intersecciona con:</label><br>
+        <label>{ VALUE }</label><br><br>*/-->
+
+        <button type="button" onclick="ResetToMap();" class="btn btn-primary bg-color1 rounded-0">
+		    <i class="btn-has-text fa fa-step-backward"></i>
+		    Regresar al mapa
+	    </button>
+        <button type="button" onclick="ResetToMap();" class="btn btn-primary bg-color1 rounded-0">
+		    <i class="btn-has-text fa fa-file-pdf-o"></i>
+		    Generar informe PDF
+	    </button>
+    </div>
+</div>
 <script>
+    function ResetToMap()
+    {
+        $('#queryDiv').hide();
+        $('#mapDiv').show();
+    }
+
     displayLayout();
+    $('#queryDiv').hide();
+
     require([
         "esri/Map",
         "esri/views/MapView",
@@ -37,34 +104,36 @@
         "esri/widgets/LayerList",
         ],
         function (Map, MapView, Layer, FeatureLayer, Search, LayerList) {
+
+            
             function dialogFunction(feature) {
+
                 var div = document.createElement("div");
-                var flexElement;
-                @foreach (MapLayerField field in Model.Layers[0].MapLayerFields) 
+
+                for (i = 0; i < fieldsName.length; i++)
                 {
-                    @:flexElement = decodeHtml("@field.Name");
-                    @:if (feature.graphic.attributes[flexElement] != undefined && feature.graphic.attributes[flexElement] != 0)
-                    {    
-                        @if(field.Type == MapLayerField.NumberField)
-					    {
-                            @:div.innerHTML += "<b>@field.Alias:</b> " + feature.graphic.attributes[flexElement].toFixed(0) + "<br>";
-					    }
-					    else if(field.Type == MapLayerField.DoubleField)
+                    if (feature.graphic.attributes[fieldsName[i]] != undefined && feature.graphic.attributes[fieldsName[i]] != 0)
+                    {
+                        var data = feature.graphic.attributes[fieldsName[i]];
+                        if(fieldsType[i] == @MapLayerField.NumberField)
                         {
-                        @:if (Math.round(feature.graphic.attributes[flexElement]) !== feature.graphic.attributes[flexElement]){
-                            @:div.innerHTML += "<b>@field.Alias:</b> " + feature.graphic.attributes[flexElement].toFixed(2) + "<br>";
-                        @:}else {
-                            @:div.innerHTML += "<b>@field.Alias:</b> " + feature.graphic.attributes[flexElement] + "<br>";
-                        @:}
-                        
+                            data = data.toFixed(0);
                         }
-                    }
+                        else if (fieldsType[i] == @MapLayerField.DoubleField)
+                        {
+                            if (Math.round(feature.graphic.attributes[fieldsName[i]]) !== feature.graphic.attributes[fieldsName[i]])
+                            {
+                                data = data.toFixed(2);
+                            }
+                        }
+						div.innerHTML += "<b>"+fieldsAlias[i]+":</b> " + data + "<br>";
+					} 
                 }
                 ;
                 div.innerHTML += "<br>" + 
-                "<button type='submit' class='btn btn-primary bg-color1 rounded-0'><i class='btn-has-text fa fa-search'></i>" +
-                    "Consultar" + "<br>" + 
-                    "</button>";
+                "<button onclick='queryFunction()' type='submit' class='btn btn-primary bg-color1 rounded-0'><i class='btn-has-text fa fa-search'></i>" +
+                    "Consulta avanzada" + "<br>" + 
+                "</button>";
                 return div;
             };
         
@@ -97,7 +166,7 @@
 
                 var popupTemplate = {
                     // autocasts as new PopupTemplate()
-                    title: "Catastro",
+                    title: "Información de esta ubicación",
                     outFields: ["*"],
                     content: dialogFunction,
                     fieldInfos:

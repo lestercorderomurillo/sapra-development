@@ -23,7 +23,7 @@ namespace sapra.Controllers
 		[HttpGet]
 		public IActionResult Panel(string tab = "General")
 		{
-			if (new SessionController().GetSessionRole(HttpContext) > 0) 
+			if (SessionController.GetSessionVariable(HttpContext) > 0) 
 			{
 				if(ControllerHelper.ViewExists(this, "Tab" + tab)) 
 				{
@@ -43,7 +43,7 @@ namespace sapra.Controllers
 		[HttpPost]
 		public IActionResult TabGeneral()
 		{
-			if (new SessionController().GetSessionRole(HttpContext) > 0) 
+			if (SessionController.GetSessionVariable(HttpContext) > 0) 
 			{
 				var model = LoadSettings();
 				model.Response = GetResponseFromRedirect();
@@ -55,9 +55,10 @@ namespace sapra.Controllers
 		[HttpPost]
 		public IActionResult TabRoles()
 		{
-			if (new SessionController().GetSessionRole(HttpContext) > 0) 
+			using var db = new DatabaseContext();
+			if (SessionController.GetSessionVariable(HttpContext) > 0)
 			{
-				var model = new RoleListViewModel(new DatabaseContext().RoleRepository.ToList())
+				var model = new RoleListViewModel(db.RoleRepository.ToList())
 				{
 					Response = GetResponseFromRedirect()
 				};
@@ -65,12 +66,13 @@ namespace sapra.Controllers
 				return PartialView(model);
 			}
 			return AccessDeniedView();
+
 		}
 
 		[HttpPost]
 		public IActionResult TabUsers(string searchQuery = "")
 		{
-			if (new SessionController().GetSessionRole(HttpContext) > 0) {
+			if (SessionController.GetSessionVariable(HttpContext) > 0) {
 				var model = new UserListViewModel(RequestAllUsers(searchQuery))
 				{
 					Response = GetResponseFromRedirect(),
@@ -84,7 +86,7 @@ namespace sapra.Controllers
 		[HttpPost]
 		public IActionResult TabZone()
 		{
-			if (new SessionController().GetSessionRole(HttpContext) > 0) {
+			if (SessionController.GetSessionVariable(HttpContext) > 0) {
 				var model = new MapLayerListViewModel(RequestAllMapLayers(0, false))
 				{
 					Response = GetResponseFromRedirect()
@@ -138,6 +140,7 @@ namespace sapra.Controllers
 		[HttpPost]
 		public IActionResult EditUser(int userId)
 		{
+			using var db = new DatabaseContext();
 			User user;
 
 			if (userId == 0)
@@ -152,26 +155,27 @@ namespace sapra.Controllers
 			var PhoneNumbers = new List<string>();
 			var PhoneNumbersType = new List<string>();
 
-			for (int i = 0; i < user.UserInfo.PhoneNumbers.Count; i++) 
+			for (int i = 0; i < user.UserInfo.PhoneNumbers.Count; i++)
 			{
 				PhoneNumbers.Add(user.UserInfo.PhoneNumbers[i].Number);
 				PhoneNumbersType.Add(user.UserInfo.PhoneNumbers[i].Type);
 			}
 
-			ViewBag.PhoneNumbers     = JsonConvert.SerializeObject(PhoneNumbers);
+			ViewBag.PhoneNumbers = JsonConvert.SerializeObject(PhoneNumbers);
 			ViewBag.PhoneNumbersType = JsonConvert.SerializeObject(PhoneNumbersType);
 
-			ViewBag.Roles = new DatabaseContext().RoleRepository.ToList();
+			ViewBag.Roles = db.RoleRepository.ToList();
 
 			var model = new UserEditViewModel(user);
 			return PartialView("EditUser", model);
+
 		}
 
 		[HttpPost]
 		public IActionResult EditRole(int roleId)
 		{
+			using var db = new DatabaseContext();
 			Role role;
-			var db = new DatabaseContext();
 
 			if (roleId == 0)
 			{
@@ -193,21 +197,25 @@ namespace sapra.Controllers
 			var permissionsFromDb = db.RolePermissionRepository.Where(e => e.RoleId == roleId).Select(e => e.PermissionName).ToList();
 
 			ViewBag.Permissions = permissions;
-			foreach (var p in permissions) 
+
+			foreach (var p in permissions)
 			{
 				selected.Add(permissionsFromDb.Contains(p));
 			}
+
 			ViewBag.Selected = selected;
-			ViewBag.Roles = new DatabaseContext().RoleRepository.ToList();
+			ViewBag.Roles = db.RoleRepository.ToList();
 
 			return PartialView("EditRole", role);
+
+
 		}
 
 		[HttpPost]
 		public IActionResult EditLayer(int mapLayerId)
 		{
+			using var db = new DatabaseContext();
 			MapLayer layer;
-			var db = new DatabaseContext();
 
 			if (mapLayerId == 0)
 			{
@@ -222,7 +230,7 @@ namespace sapra.Controllers
 			var MapLayerFieldsNames = new List<string>();
 			var MapLayerFieldsTypes = new List<int>();
 
-			if (layer.MapLayerFields != null) 
+			if (layer.MapLayerFields != null)
 			{
 				for (int i = 0; i < layer.MapLayerFields.Count; i++)
 				{
@@ -231,7 +239,7 @@ namespace sapra.Controllers
 					MapLayerFieldsTypes.Add(layer.MapLayerFields[i].Type);
 				}
 			}
-			else 
+			else
 			{
 				layer.MapLayerFields = new List<MapLayerField>();
 			}
@@ -247,13 +255,14 @@ namespace sapra.Controllers
 		[HttpPost]
 		public IActionResult DeleteUser(int userId)
 		{
+			using var db = new DatabaseContext();
+
 			if (userId < 1)
 			{
 				return AccessDeniedView();
 			}
 			else
 			{
-				var db = new DatabaseContext();
 				User user = db.UserRepository.Where(e => e.UserId == userId).SingleOrDefault();
 				db.UserRepository.Remove(user);
 				db.SaveChanges();
@@ -268,30 +277,31 @@ namespace sapra.Controllers
 		[HttpPost]
 		public IActionResult DeleteRole(int roleId)
 		{
+			using var db = new DatabaseContext();
+
 			if (roleId < 1)
 			{
 				return AccessDeniedView();
 			}
 			else
 			{
-				var UsersUsingRole = new DatabaseContext().UserRepository.Where(e => e.RoleId == roleId).ToList().Count();
-				if (UsersUsingRole == 0) 
+				var usersUsingRole = db.UserRepository.Where(e => e.RoleId == roleId).ToList().Count();
+				if (usersUsingRole == 0)
 				{
-					var db = new DatabaseContext();
 					Role role = db.RoleRepository.Where(e => e.RoleId == roleId).SingleOrDefault();
 					db.RoleRepository.Remove(role);
 					db.SaveChanges();
-					var model = new RoleListViewModel(new DatabaseContext().RoleRepository.ToList())
+					var model = new RoleListViewModel(db.RoleRepository.ToList())
 					{
 						Response = new ServerResponseViewModel("Se ha eliminado el rol correctamente. ", ResponseType.Success)
 					};
 					return PartialView("TabRoles", model);
 				}
-				else 
+				else
 				{
-					var model = new RoleListViewModel(new DatabaseContext().RoleRepository.ToList())
+					var model = new RoleListViewModel(db.RoleRepository.ToList())
 					{
-						Response = new ServerResponseViewModel("Al menos " + UsersUsingRole + " usuarios tienen asignados este rol, debe eliminar dichos usuarios si quiere eliminar ese rol.", ResponseType.Error)
+						Response = new ServerResponseViewModel("Al menos " + usersUsingRole + " usuarios tienen asignados este rol, debe eliminar dichos usuarios si quiere eliminar ese rol.", ResponseType.Error)
 					};
 					return PartialView("TabRoles", model);
 				}
@@ -301,13 +311,14 @@ namespace sapra.Controllers
 		[HttpPost]
 		public IActionResult DeleteLayer(int mapLayerId)
 		{
+			using var db = new DatabaseContext();
+
 			if (mapLayerId < 1)
 			{
 				return AccessDeniedView();
 			}
 			else
 			{
-				var db = new DatabaseContext();
 				var layer = db.MapLayerRepository.Where(e => e.MapLayerId == mapLayerId).SingleOrDefault();
 				db.MapLayerRepository.Remove(layer);
 				db.SaveChanges();
@@ -323,10 +334,11 @@ namespace sapra.Controllers
 		[HttpPost]
 		public IActionResult SubmitUserUpdate(UserEditViewModel userEditViewModel)
 		{
+			using var db = new DatabaseContext();
+
 			if (userEditViewModel != null)
 			{
 				var user = userEditViewModel.User;
-				var db = new DatabaseContext();
 
 				if (user.UserId == 0)
 				{
@@ -354,8 +366,8 @@ namespace sapra.Controllers
 					syncUserInfo.Email = user.UserInfo.Email;
 					syncUserInfo.TypeIdentity = user.UserInfo.TypeIdentity;
 					syncUserInfo.Identity = user.UserInfo.Identity;
-					syncUser.RoleId = user.RoleId;
 					syncUserInfo.Gender = user.UserInfo.Gender;
+					syncUser.RoleId = user.RoleId;
 
 					db.SaveChanges();
 
@@ -370,12 +382,13 @@ namespace sapra.Controllers
 		[HttpPost]
 		public IActionResult SubmitRoleUpdate(Role role)
 		{
+			using var db = new DatabaseContext();
+
 			if (role != null)
 			{
 				if (role.RoleId == 0)
 				{
 					/* INSERT */
-					var db = new DatabaseContext();
 					db.RoleRepository.Add(role);
 					db.SaveChanges();
 
@@ -389,7 +402,6 @@ namespace sapra.Controllers
 				else
 				{
 					/* UPDATE */
-					var db = new DatabaseContext();
 					var model = db.RoleRepository.Where(e => e.RoleId == role.RoleId).SingleOrDefault();
 					db.Entry(model).CurrentValues.SetValues(role);
 					db.RolePermissionRepository.RemoveRange(db.RolePermissionRepository.Where(e => e.RoleId == role.RoleId));
@@ -412,10 +424,10 @@ namespace sapra.Controllers
 		[HttpPost]
 		public IActionResult SubmitLayerUpdate(MapLayer layer)
 		{
+			using var db = new DatabaseContext();
+
 			if (layer != null)
 			{
-				var db = new DatabaseContext();
-
 				if (layer.MapLayerId == 0)
 				{
 					/* INSERT */
@@ -450,10 +462,11 @@ namespace sapra.Controllers
 
 					foreach (var field in layer.MapLayerFields)
 					{
-						db.MapLayerFieldRepository.Add(new MapLayerField(){ 
-							Name = field.Name, 
-							Alias = field.Alias, 
-							Type = field.Type, 
+						db.MapLayerFieldRepository.Add(new MapLayerField()
+						{
+							Name = field.Name,
+							Alias = field.Alias,
+							Type = field.Type,
 							MapLayerId = layer.MapLayerId
 						});
 					}

@@ -22,22 +22,22 @@ namespace sapra.Controllers
 
 		public const int IS_LOGGED = 4;
 
-		public int TryLogin(HttpContext context, string email, string password)
+		public static int TryLogin(HttpContext context, string email, string password)
 		{
+			using var db = new DatabaseContext();
 
-			if(GetSessionRole(context) > 0) 
+			if (GetSessionVariable(context) > 0)
 			{
 				return IS_LOGGED;
 			}
 
-			var db = new DatabaseContext();
 			var userInfo = db.UserInfoRepository.Where(e => e.Email == email).SingleOrDefault();
 
-			if (userInfo != null) 
+			if (userInfo != null)
 			{
 				var user = db.UserRepository.Where(e => e.UserInfo == userInfo).SingleOrDefault();
 
-				if(user.LoginAttempts >= 8) 
+				if (user.LoginAttempts >= 8)
 				{
 					return TOO_MANY_TRIES;
 				}
@@ -47,7 +47,7 @@ namespace sapra.Controllers
 					user.LoginAttempts = 0;
 					db.SaveChanges();
 
-					if (user.LastLogin < new DateTime(1900, 1, 1)) 
+					if (user.LastLogin < new DateTime(1900, 1, 1))
 					{
 						user.RecoveryHash = CryptographyHelper.CreateSalt(32);
 						db.SaveChanges();
@@ -58,7 +58,7 @@ namespace sapra.Controllers
 					context.Session.SetInt32("UserId", user.UserId);
 					return SUCCESS;
 				}
-				else 
+				else
 				{
 					user.LoginAttempts += 1;
 					db.SaveChanges();
@@ -68,13 +68,13 @@ namespace sapra.Controllers
 			return NOT_FOUND;
 		}
 
-		public int GetSessionRole(HttpContext context)
+		public static int GetSessionVariable(HttpContext context, string variable = "RoleId")
 		{
 			if (context == null || context.Session == null) { return 0; }
-			return (context.Session.GetInt32("RoleId") != null) ? (int)context.Session.GetInt32("RoleId") : 0;
+			return (context.Session.GetInt32(variable) != null) ? (int)context.Session.GetInt32(variable) : 0;
 		}
 
-		public void Logout(HttpContext context)
+		public static void Logout(HttpContext context)
 		{
 			context.Session.Clear();
 		}

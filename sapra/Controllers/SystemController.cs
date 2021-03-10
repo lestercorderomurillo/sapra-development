@@ -25,7 +25,7 @@ namespace sapra.Controllers
 		[HttpGet]
 		public IActionResult Index()
 		{
-			if (new SessionController().GetSessionRole(HttpContext) > 0)
+			if (SessionController.GetSessionVariable(HttpContext) > 0)
 			{
 				return View();
 			}
@@ -39,25 +39,26 @@ namespace sapra.Controllers
 		}
 
 		[HttpPost]
-		public User RequestUser(int userId, bool includeExtraInformation = false)
+		public static User RequestUser(int userId, bool includeExtraInformation = false)
 		{
-			var db = new DatabaseContext();
-			var user = db.UserRepository.Where(e => e.UserId == userId).SingleOrDefault();
+			using var db = new DatabaseContext();
 
-			if (includeExtraInformation) 
+			var user = db.UserRepository.Where(e => e.UserId == userId).SingleOrDefault();
+			if (includeExtraInformation)
 			{
 				var userInfo = db.UserInfoRepository.Where(e => e.UserId == userId).SingleOrDefault();
 				var userPhones = db.UserPhoneRepository.Where(e => e.UserId == userId).ToList();
 				userInfo.PhoneNumbers = userPhones;
 				user.SetUserInfo(userId, userInfo);
 			}
-			
+
 			return user;
 		}
 
 		public MapLayer RequestLayer(int layerId, bool includeExtraInformation = false)
 		{
-			var db = new DatabaseContext();
+			using var db = new DatabaseContext();
+
 			var layer = db.MapLayerRepository.Where(e => e.MapLayerId == layerId).SingleOrDefault();
 
 			if (includeExtraInformation)
@@ -66,54 +67,58 @@ namespace sapra.Controllers
 				layer.MapLayerFields = fields;
 			}
 			return layer;
+
 		}
 
 		[HttpPost]
 		public List<MapLayer> RequestAllMapLayers(int page = 0, bool requestOnlyVisible = true)
 		{
+			using var db = new DatabaseContext();
+
 			var pp = 8;
 			var offset = page * pp;
-			var db = new DatabaseContext();
 			var list = new List<MapLayer>();
 
-			if (requestOnlyVisible) 
+			if (requestOnlyVisible)
 			{
 				list = db.MapLayerRepository.Where(e => e.Visible == 0).Skip(offset).Take(pp).ToList();
 			}
-			else 
+			else
 			{
 				list = db.MapLayerRepository.Skip(offset).Take(pp).ToList();
 			}
 
 			var found = list.Find(e => e.Name == LoadSettings().BaseLayer);
-			if(found != null) 
+			if (found != null)
 			{
 				found.MapLayerFields = RequestLayer(found.MapLayerId, true).MapLayerFields;
 			}
+
 			return list;
 		}
 
 		[HttpPost]
 		public List<User> RequestAllUsers(string searchQuery = "", int page = 0)
 		{
+
+			using var db = new DatabaseContext();
+
 			var pp = 8;
 			var offset = page * pp;
+			var users = new List<User>();
 
-			var db = new DatabaseContext();
-			var users = new List<User>(); ;
-
-			if (searchQuery!= null && searchQuery.Length > 0) 
+			if (searchQuery != null && searchQuery.Length > 0)
 			{
 				users = db.UserRepository.Where(e => e.UserInfo.FirstName.Contains(searchQuery)).Skip(offset).Take(pp).ToList();
 			}
-			else 
+			else
 			{
 				users = db.UserRepository.Skip(offset).Take(pp).ToList();
 			}
-			
+
 			var usersComplex = new List<User>();
 
-			foreach(var user in users) 
+			foreach (var user in users)
 			{
 				usersComplex.Add(RequestUser(user.UserId, true));
 			}
@@ -124,9 +129,9 @@ namespace sapra.Controllers
 		[HttpPost]
 		public Role RequestRole(int roleId, bool includePermissions = false)
 		{
-			var db = new DatabaseContext();
-			var role = db.RoleRepository.Where(e => e.RoleId == roleId).SingleOrDefault();
+			using var db = new DatabaseContext();
 
+			var role = db.RoleRepository.Where(e => e.RoleId == roleId).SingleOrDefault();
 			if (role != null)
 			{
 				if (includePermissions)
@@ -150,11 +155,12 @@ namespace sapra.Controllers
 				}
 			}
 			else
-			{ 
+			{
 				return null;
 			}
 
 			return role;
+
 		}
 
 		public ServerResponseViewModel GetResponseFromRedirect(ResponseType responseType = ResponseType.Success)
@@ -190,14 +196,15 @@ namespace sapra.Controllers
 			var file = System.IO.Path.Combine(webRoot, fileName);
 			var json = System.IO.File.ReadAllText(file);
 			return JsonConvert.DeserializeObject<GeneralSettingsModel>(json);
-			
 		}
 
 		public async Task SendEmail(string dst, string title, string body)
 		{
-			var message = new MailMessage("sapradevelopment@gmail.com", dst);
-			message.Subject = title;
-			message.Body = body;
+			var message = new MailMessage("sapradevelopment@gmail.com", dst)
+			{
+				Subject = title,
+				Body = body
+			};
 
 			var smtpClient = new SmtpClient("smtp.gmail.com", 25) {
 				EnableSsl = true,

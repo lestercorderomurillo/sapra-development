@@ -19,7 +19,7 @@ namespace sapra.Controllers
 			ViewBag.MainTitle = settings.Title;
 			ViewBag.Subtitle = settings.Subtitle;
 
-			if (new SessionController().GetSessionRole(HttpContext) > 0)
+			if (SessionController.GetSessionVariable(HttpContext) > 0)
 			{
 				TempData.Clear();
 				return RedirectToAction("Map", "Zone");
@@ -31,7 +31,7 @@ namespace sapra.Controllers
 		[HttpGet]
 		public IActionResult RequestRestorePassword()
 		{
-			if (new SessionController().GetSessionRole(HttpContext) > 0)
+			if (SessionController.GetSessionVariable(HttpContext) > 0)
 			{
 				TempData.Clear();
 				return RedirectToAction("Map", "Zone");
@@ -43,9 +43,10 @@ namespace sapra.Controllers
 		[HttpPost]
 		public async Task<IActionResult> RequestRestorePassword(RestorePasswordViewModel model)
 		{
-			var db = new DatabaseContext();
+			using var db = new DatabaseContext();
+
 			var user = db.UserRepository.Where(e => e.UserInfo.Email == model.Email).SingleOrDefault();
-			if(user != null) 
+			if (user != null)
 			{
 				user.RecoveryHash = CryptographyHelper.CreateSalt(32);
 				db.SaveChanges();
@@ -53,9 +54,9 @@ namespace sapra.Controllers
 				var settings = LoadSettings();
 
 				var body = "Haga click aqui para recuperar su contraseña: " +
-				"https://localhost:44349/Authorization/RestorePassword?token="+ user.RecoveryHash;
-				
-				await SendEmail(model.Email, "[" + settings.Title + " " + settings.Subtitle + 
+				"https://localhost:44349/Authorization/RestorePassword?token=" + user.RecoveryHash;
+
+				await SendEmail(model.Email, "[" + settings.Title + " " + settings.Subtitle +
 				"] Recuperación de Contraseña", body);
 			}
 
@@ -66,21 +67,24 @@ namespace sapra.Controllers
 		[HttpGet]
 		public IActionResult RestorePassword(string token, bool ftm = false)
 		{
-			if (new SessionController().GetSessionRole(HttpContext) > 0)
+			using var db = new DatabaseContext();
+
+			if (SessionController.GetSessionVariable(HttpContext) > 0)
 			{
 				TempData.Clear();
 				return RedirectToAction("Map", "Zone");
 			}
 
-			if (String.IsNullOrEmpty(token)) 
+			if (string.IsNullOrEmpty(token))
 			{
 				return ForceRequestLogin();
 			}
 
 			var model = new RestorePasswordViewModel();
-			var user = new DatabaseContext().UserRepository.Where(e => e.RecoveryHash == token).SingleOrDefault();
+			var user = db.UserRepository.Where(e => e.RecoveryHash == token).SingleOrDefault();
 
-			if(user == null) {
+			if (user == null)
+			{
 				return ForceRequestLogin();
 			}
 
@@ -97,27 +101,28 @@ namespace sapra.Controllers
 		[HttpGet]
 		public IActionResult Logout()
 		{
-			new SessionController().Logout(HttpContext);
+			SessionController.Logout(HttpContext);
 			return RedirectToAction("Login");
 		}
 
 		[HttpPost]
 		public IActionResult Login(LoginViewModel model)
 		{
+			using var db = new DatabaseContext();
 
 			var settings = LoadSettings();
 			ViewBag.MainTitle = settings.Title;
 			ViewBag.Subtitle = settings.Subtitle;
 
-			switch (new SessionController().TryLogin(HttpContext, model.Email, model.Password)) 
+			switch (SessionController.TryLogin(HttpContext, model.Email, model.Password))
 			{
 				case SessionController.IS_LOGGED:
 				case SessionController.SUCCESS:
 					TempData.Clear();
-					return RedirectToAction("Map", "Zone"); 
+					return RedirectToAction("Map", "Zone");
 
 				case SessionController.FIRST_LOGIN:
-					var user = new DatabaseContext().UserRepository.Where(e => e.UserInfo.Email == model.Email).SingleOrDefault();
+					var user = db.UserRepository.Where(e => e.UserInfo.Email == model.Email).SingleOrDefault();
 					return RedirectToAction("RestorePassword", new { token = user.RecoveryHash, ftm = true });
 
 				case SessionController.NOT_FOUND:
@@ -129,16 +134,16 @@ namespace sapra.Controllers
 					break;
 
 			}
-
 			return View(model);
 		}
 
 		[HttpPost]
 		public IActionResult RestorePassword(RestorePasswordViewModel model)
 		{
-			if (model.Password == model.ConfirmPassword) 
+			using var db = new DatabaseContext();
+
+			if (model.Password == model.ConfirmPassword)
 			{
-				var db = new DatabaseContext();
 				var user = db.UserRepository.Where(e => e.RecoveryHash == model.Token).SingleOrDefault();
 				user.Salt = CryptographyHelper.CreateSalt(32);
 				user.Hash = CryptographyHelper.Hash(model.Password + user.Salt);
@@ -154,8 +159,10 @@ namespace sapra.Controllers
 
 		public static bool IsAllowed(int roleId, Permission permission) 
 		{
-			var obj = new DatabaseContext().RolePermissionRepository.Where(e => e.RoleId == roleId).
-			Where(e => e.PermissionName == permission.ToString() ).SingleOrDefault();
+			using var db = new DatabaseContext();
+
+			var obj = db.RolePermissionRepository.Where(e => e.RoleId == roleId).
+			Where(e => e.PermissionName == permission.ToString()).SingleOrDefault();
 
 			return (obj != null);
 		}

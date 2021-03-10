@@ -22,7 +22,7 @@ namespace sapra.Controllers
 		[HttpGet]
 		public IActionResult Map()
 		{
-			if (new SessionController().GetSessionRole(HttpContext) > 0) 
+			if (SessionController.GetSessionVariable(HttpContext) > 0) 
 			{
 				return View(new MapLayerListViewModel(RequestAllMapLayers()){ BaseUrl = LoadSettings().ArcGISURL });
 			}
