@@ -31,15 +31,9 @@ namespace sapra.Models
 		public int LoginAttempts { get; set; }
 
 		/**EF Reference**/
-		public UserInfo UserInfo { get; private set; }
+		public UserInfo UserInfo { get; set; }
 		
 		public Role Role { get; set; }
-
-		public void SetUserInfo(int UserId, UserInfo userInfo) 
-		{
-			userInfo.UserId = UserId;
-			UserInfo = userInfo;
-		}
 
 		public User()
 		{

@@ -6,6 +6,19 @@ using System.Threading.Tasks;
 
 namespace sapra.ViewModels
 {
+	public class MapShowcaseViewModel : BaseViewModel 
+	{
+		public int QueryFID;
+
+		public MapLayerField Fields;
+		public User User;
+		public string Transaction;
+		public string ActionStr; /*Vivienda*/
+		public String DateStr; /*Al ser las @DateTime.Now.ToShortTimeString() del dia @DateTime.Now.ToLongDateString()*/
+		public bool Accepted;
+
+	}
+
 	public class MapLayerListViewModel : BaseViewModel
 	{
 		public string BaseUrl { get; set; }

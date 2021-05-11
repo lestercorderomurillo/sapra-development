@@ -1,7 +1,7 @@
 ﻿@model sapra.ViewModels.MapLayerListViewModel
 <h4>Módulo de Zonificación</h4><br>
 <div>
-	@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.CAPAS_CREAR))
+	@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.CAPAS_CREAR))
 	{ 
 	<button onclick="AddLayer()" class="btn btn-primary bg-color1 rounded-0 mb-4">
 		<i class="btn-has-text fa fa-map"></i>
@@ -37,7 +37,7 @@
 					<button onclick="ViewLayer(@layer.MapLayerId);" class="btn btn-primary bg-color1 rounded-0">
 						<i class="fa fa-search"></i>
 					</button>
-					@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.CAPAS_EDITAR))
+					@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.CAPAS_EDITAR))
 					{ 
 					<button onclick="EditLayer(@layer.MapLayerId)" class="btn btn-primary bg-color1 rounded-0">
 						<i class="fa fa-edit"></i>
@@ -45,7 +45,7 @@
 					}
 					@if(layer.Name != sapra.Controllers.SystemController.LoadSettings().BaseLayer)
 					{
-						@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.CAPAS_ELIMINAR))
+						@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.CAPAS_ELIMINAR))
 						{ 
 							<button onclick="DeleteLayer(@layer.MapLayerId)" class="btn btn-danger rounded-0">
 							<i class="fa fa-remove"></i>
@@ -58,13 +58,12 @@
 	</table>
 </div>
 <script>
-
 	var _mapLayerId = 0;
 
 	function AddLayer() {
 		$.ajax({
 			type: "post",
-			url: "EditLayer",
+			url: "Administrator/EditLayer",
 			dataType: "html",
 			contentType: "application/json",
 			data: { "mapLayerId" : 0 },
@@ -77,7 +76,7 @@
 	function ViewLayer(mapLayerId) {
 		$.ajax({
 			type: "post",
-			url: "ViewLayer",
+			url: "Administrator/ViewLayer",
 			data: {"mapLayerId": mapLayerId},
 			success: function (response) {
 				$("#currentTab").html(response);
@@ -88,7 +87,7 @@
 	function EditLayer(mapLayerId) {
 		$.ajax({
 			type: "post",
-			url: "EditLayer",
+			url: "Administrator/EditLayer",
 			data: {"mapLayerId": mapLayerId},
 			success: function (response) {
 				$("#currentTab").html(response);
@@ -106,7 +105,7 @@
 		setTimeout(function(){
 			$.ajax({
 				type: "post",
-				url: "DeleteLayer",
+				url: "Administrator/DeleteLayer",
 				data: {"mapLayerId": _mapLayerId},
 				success: function (response) {
 					$("#currentTab").html(response);
@@ -115,7 +114,6 @@
 		}, 1000);
 	}
 </script>
-
 <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="on-delete-modal">
   <div class="modal-dialog">
     <div class="modal-content">

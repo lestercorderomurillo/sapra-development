@@ -1,18 +1,18 @@
 ﻿@model MapLayer
 <h4>Consultar información sobre una Capa</h4><br>
 <div class="form-group">
-
 	<label class="font-weight-bolder">Nombre de la capa:</label><br>
 	<label>@Model.Name</label><br><br>
 	<label class="font-weight-bolder">Dirección URL de la capa:</label><br>
 	<label>@Model.URL</label><br><br>
-	@if (Model.Visible == 0) {
+	@if (Model.Visible == 0) 
+	{
 		<label class="font-weight-bolder">Esta capa es <b>VISIBLE</b> en el Mapa ArcGIS</label><br><br>
 	}
-	else { 
+	else 
+	{ 
 		<label class="font-weight-bolder">Esta capa esta <b>OCULTA</b> en el Mapa ArcGIS</label><br><br>
 	}
-	
 	@if(Model.MapLayerFields.Count > 0) 
 	{
 		@if(Model.Name == sapra.Controllers.SystemController.LoadSettings().BaseLayer)
@@ -30,14 +30,10 @@
 		{
 			<label class="small">Campos deshabilitados. Este campo debe ser principal para verlos/editarlos.</label><br><br>
 		}
-
-		
 	}
 	<button class="btn btn-primary bg-color1 rounded-0" 
-	onclick="setTab('Zone');">
+	onclick="setTab('Layers');">
 		<i class="btn-has-text fa fa-step-backward"></i>
 		Regresar
 	</button>
-	
-
 </div>

@@ -9,7 +9,7 @@
 	<br>
 	<div class="row no-gutters">
 		<div class="col col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3 text-uppercase">
-			@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ADMINISTRACION_GENERAL)) 
+			@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.ADMINISTRACION_GENERAL)) 
 			{
 			<button id="General" class="tab light border border-gray w-100 p-3 rounded-left" onclick="setTab('General');">
 				<div class="text-left font-weight-bold">General</div>
@@ -17,7 +17,7 @@
 			</button>
 			}
 			else if(resultTab == "General") { resultTab = "Roles"; }
-			@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ADMINISTRACION_ROLES)) 
+			@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.ADMINISTRACION_ROLES)) 
 			{
 			<button id="Roles" class="tab light border border-gray w-100 p-3 rounded-left" onclick="setTab('Roles');">
 				<div class="text-left font-weight-bold">Roles</div>
@@ -25,17 +25,17 @@
 			</button>
 			}
 			else if(resultTab == "Roles") { resultTab = "Users"; }
-			@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ADMINISTRACION_USUARIOS)) 
+			@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.ADMINISTRACION_USUARIOS)) 
 			{
 			<button id="Users" class="tab light border border-gray w-100 p-3 rounded-left" onclick="setTab('Users');">
 				<div class="text-left font-weight-bold">Usuarios</div>
 				<div class="text-left small">Permite administrar usuarios y su información</div>
 			</button>
 			}
-			else if(resultTab == "Users") { resultTab = "Zone"; }
-			@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.ADMINISTRACION_CAPAS)) 
+			else if(resultTab == "Users") { resultTab = "Layers"; }
+			@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.ADMINISTRACION_CAPAS)) 
 			{
-			<button id="Zone" class="tab light border border-gray w-100 p-3 rounded-left" onclick="setTab('Zone');">
+			<button id="Layers" class="tab light border border-gray w-100 p-3 rounded-left" onclick="setTab('Layers');">
 				<div class="text-left font-weight-bold">Mapa ArcGIS</div>
 				<div class="text-left small">Permite administrar capas del mapa</div>
 			</button>
@@ -50,16 +50,14 @@
 			</div>
 		</div>
 	</div>
-	
 </div>
 <script>
-
 	$(document).ready(function () {
 		setTab('@resultTab');
 	});
 
 	function setTab(tabName) {
-		ajax("Tab" + tabName, "#currentTab");
+		ajax("Administrator/Tab" + tabName, "#currentTab");
 
 		$('.tab').removeClass("border-tab");
 		$('.tab').removeClass("border-gray");
@@ -68,7 +66,5 @@
 		$('#' + tabName).addClass("border-dark");
 		$('.tab:not(".border-dark")').addClass("border-gray");
 		$('#' + tabName).addClass("border-tab");
-
 	}
-
 </script>

@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using jsreport.AspNetCore;
+using jsreport.Binary;
+using jsreport.Local;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -63,7 +66,11 @@ namespace sapra
 			});
 
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
-		}
+			services.AddJsReport(new LocalReporting()
+				.UseBinary(JsReportBinary.GetBinary())
+				.AsUtility()
+				.Create());
+			}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
@@ -88,7 +95,7 @@ namespace sapra
 				endpoints.MapControllerRoute(
 					name: "Map",
 					pattern: "Map",
-					defaults: new { controller = "Zone", action = "Map" });
+					defaults: new { controller = "Map", action = "MapView" });
 
 				endpoints.MapControllerRoute(
 					name: "Logout",
@@ -101,8 +108,13 @@ namespace sapra
 					defaults: new { controller = "Authorization", action = "Login" });
 
 				endpoints.MapControllerRoute(
+					name: "Administrator",
+					pattern: "Administrator",
+					defaults: new { controller = "Administrator", action = "Panel" });
+
+				endpoints.MapControllerRoute(
 					name: "default",
-					pattern: "{controller=Zone}/{action=Map}/{id?}");
+					pattern: "{controller=Map}/{action=MapView}/{id?}");
 
 			});
 		}

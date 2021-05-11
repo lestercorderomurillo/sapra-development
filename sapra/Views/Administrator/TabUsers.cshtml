@@ -1,7 +1,7 @@
 ﻿@model sapra.ViewModels.UserListViewModel
 <h4>Módulo de Usuarios</h4><br>
 <div class="">
-	@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.USUARIOS_CREAR)) 
+	@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.USUARIOS_CREAR)) 
 	{
 	<button type="button" onclick="AddUser()" class="btn btn-primary bg-color1 rounded-0 mb-4">
 		<i class="btn-has-text fa fa-user"></i>
@@ -41,7 +41,7 @@
                     <button onclick="ViewUser(@user.UserId);" class="btn btn-primary bg-color1 rounded-0">
                         <i class="fa fa-search"></i>
                     </button>
-					@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.USUARIOS_EDITAR)) 
+					@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.USUARIOS_EDITAR)) 
 					{
 					<button onclick="EditUser(@user.UserId)" class="btn btn-primary bg-color1 rounded-0">
 						<i class="fa fa-edit"></i>
@@ -50,7 +50,7 @@
                     
 					@if (Model.Users.Count > 1) 
 					{
-						@if(sapra.Controllers.AuthorizationController.IsAllowed(new sapra.Controllers.SessionController().GetSessionRole(Context), Permission.USUARIOS_ELIMINAR))
+						@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.USUARIOS_ELIMINAR) && user.UserId > 10)
 						{ 
 						<button onclick="DeleteUser(@user.UserId)" class="btn btn-danger rounded-0">
 							<i class="fa fa-remove"></i>
@@ -63,13 +63,12 @@
 	</table>
 </div>
 <script>
-
 	var _userId = 0;
 
 	function AddUser() {
 		$.ajax({
 			type: "post",
-			url: "EditUser",
+			url: "Administrator/EditUser",
 			data: { "userId" : 0 },
 			success: function (response) {
 				$("#currentTab").html(response);
@@ -80,7 +79,7 @@
 	function doSearch() {
 		$.ajax({
 			type: "post",
-			url: "TabUsers",
+			url: "Administrator/TabUsers",
 			data: { "searchQuery": $('#SearchQuery').val() },
 			success: function (response) {
 				$("#currentTab").html(response);
@@ -91,7 +90,7 @@
 	function ViewUser(userId) {
 		$.ajax({
 			type: "post",
-			url: "ViewUser",
+			url: "Administrator/ViewUser",
 			data: { "userId" : userId },
 			success: function (response) {
 				$("#currentTab").html(response);
@@ -102,7 +101,7 @@
 	function EditUser(userId) {
 		$.ajax({
 			type: "post",
-			url: "EditUser",
+			url: "Administrator/EditUser",
 			data: {"userId": userId},
 			success: function (response) {
 				$("#currentTab").html(response);
@@ -120,7 +119,7 @@
 		setTimeout(function(){
 			$.ajax({
 				type: "post",
-				url: "DeleteUser",
+				url: "Administrator/DeleteUser",
 				data: {"userId": _userId},
 				success: function (response) {
 					$("#currentTab").html(response);
@@ -129,7 +128,6 @@
 		}, 1000);
 	}
 </script>
-
 <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="on-delete-modal">
   <div class="modal-dialog">
     <div class="modal-content">

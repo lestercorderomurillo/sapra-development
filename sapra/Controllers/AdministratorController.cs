@@ -84,7 +84,7 @@ namespace sapra.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult TabZone()
+		public IActionResult TabLayers()
 		{
 			if (SessionController.GetSessionVariable(HttpContext) > 0) {
 				var model = new MapLayerListViewModel(RequestAllMapLayers(0, false))
@@ -326,7 +326,7 @@ namespace sapra.Controllers
 				{
 					Response = new ServerResponseViewModel("Se ha eliminado la capa correctamente. ", ResponseType.Success)
 				};
-				return PartialView("TabZone", model);
+				return PartialView("TabLayers", model);
 			}
 		}
 
@@ -475,7 +475,7 @@ namespace sapra.Controllers
 					TempData["response"] = "Se ha modificado la capa correctamente.";
 				}
 
-				return RedirectToAction("Panel", new { tab = "Zone" });
+				return RedirectToAction("Panel", new { tab = "Layers" });
 			}
 			return AccessDeniedView();
 		}

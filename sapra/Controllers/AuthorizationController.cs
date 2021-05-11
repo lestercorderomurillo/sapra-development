@@ -22,7 +22,7 @@ namespace sapra.Controllers
 			if (SessionController.GetSessionVariable(HttpContext) > 0)
 			{
 				TempData.Clear();
-				return RedirectToAction("Map", "Zone");
+				return RedirectToAction("MapView", "Map");
 			}
 
 			return View(new LoginViewModel(){ Response = GetResponseFromRedirect() });
@@ -34,7 +34,7 @@ namespace sapra.Controllers
 			if (SessionController.GetSessionVariable(HttpContext) > 0)
 			{
 				TempData.Clear();
-				return RedirectToAction("Map", "Zone");
+				return RedirectToAction("MapView", "Map");
 			}
 
 			return View(new RestorePasswordViewModel());
@@ -72,7 +72,7 @@ namespace sapra.Controllers
 			if (SessionController.GetSessionVariable(HttpContext) > 0)
 			{
 				TempData.Clear();
-				return RedirectToAction("Map", "Zone");
+				return RedirectToAction("MapView", "Map");
 			}
 
 			if (string.IsNullOrEmpty(token))
@@ -119,8 +119,7 @@ namespace sapra.Controllers
 				case SessionController.IS_LOGGED:
 				case SessionController.SUCCESS:
 					TempData.Clear();
-					return RedirectToAction("Map", "Zone");
-
+					return RedirectToAction("MapView", "Map");
 				case SessionController.FIRST_LOGIN:
 					var user = db.UserRepository.Where(e => e.UserInfo.Email == model.Email).SingleOrDefault();
 					return RedirectToAction("RestorePassword", new { token = user.RecoveryHash, ftm = true });

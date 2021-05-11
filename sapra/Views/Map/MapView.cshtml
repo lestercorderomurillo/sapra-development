@@ -2,10 +2,47 @@
 @{
 	ViewData["Title"] = "Mapa de ArcGIS";
 }
+<div id="mapDiv" class="map">
+</div>
+<div id="areaDiv" class="container">
+    <br><br>
+    <h4>Consultar información sobre un Area</h4><br>
+    <div class="form-group">
+
+        <div class="w-100 h-100">
+            <h6>Campos ArcGIS sobre este area:</h6><br>
+            <div id="values" class="w-100 h-100">
+
+            </div>
+            <br>
+            <h6>Seleccione el permiso que desea consultar para el informe:</h6><br>
+            <select class="form-control border-dark mw-450 fieldClass">
+			    <option value="">Seleccionar</option>
+			    <option value="0">Vivienda</option>
+			    <option value="1">Ejemplo</option>
+		    </select>
+            <br>
+        </div>
+
+        <button type="button" onclick="ResetToMap();" class="btn btn-primary bg-color1 rounded-0">
+		    <i class="btn-has-text fa fa-step-backward"></i>
+		    Regresar al mapa
+	    </button>
+
+        <button type="button" onclick="GeneratePDF();" class="btn btn-primary bg-color1 rounded-0">
+		    <i class="btn-has-text fa fa-file-pdf-o"></i>
+		    Generar informe sobre Permiso
+	    </button>
+    </div>
+</div>
 <script>
+
+    var queryLayer;
     var fieldsName = [];
     var fieldsAlias = [];
     var fieldsType = [];
+    var layersURL = [];
+    var layersName = [];
 
     @foreach (MapLayerField field in Model.Layers[0].MapLayerFields) 
     {
@@ -14,86 +51,76 @@
     @:fieldsType.push("@field.Type");
     }
 
-        function queryFunction()
-        {
-            /*var div = document.createElement("div");;
-            var query = featureLayer.createQuery();
+    displayLayout();
+    $('#areaDiv').hide();
 
-            query.where = "OBJECTID = " + OBJECTID;
-            //query.outFields = [ "STATE_NAME", "COUNTY_NAME", "POPULATION", "(POPULATION / AREA) as 'POP_DENSITY'" ];
-            query.outFields = ["STATE_NAME", "COUNTAliasY_NAME", "POPULATION", "(POPULATION / AREA) as 'POP_DENSITY'"];
-
-            */
-            /*featureLayer.queryFeatures(query)
-                .then(function(response){
-                    // returns a feature set with features containing the following attributes
-                    // STATE_NAME, COUNTY_NAME, POPULATION, POP_DENSITY
-            });
-
-
-            $('#area-0').text(name);*/
-            $('#queryDiv').show();
-            $('#mapDiv').hide();
-        }
-
-</script>
-<style>
-    .map {
-	    padding: 0;
-	    margin: 0;
-	    width: 100% !important;
-	    height: 100% !important;
+            
+    function GeneratePDF()
+    {
+        /*$.ajax({
+            type: "post",
+            url: "Map/QueryReport",
+            data: {"FID": fid},
+            success: function (response) {
+	            $("#currentTab").html(response);
+            },
+		});*/
     }
 
-    .full {
-	    height: calc(100% - 56px);
-	    margin: 0 !important;
-    }
-
-	.esri-view .esri-view-surface--inset-outline:focus::after {
-		outline: none !important;
-	}
-
-	.esri-layer-list__item .esri-layer-list__item-container {
-		border: none !important;
-		outline: none !important;
-	}
-</style>
-
-<div id="mapDiv" class="map"></div>
-<div id="queryDiv" class="container">
-    <br><br>
-    <h4>Consultar información sobre un Area</h4><br>
-    <div class="form-group">
-
-        <div id="content" class="w-100 h-100">
-        </div>
-
-	    <!-- /*<label class="font-weight-bolder">Test:</label><br>
-	    <label id="area-0">{ VALUE }</label><br><br>
-
-        <label class="font-weight-bolder">Este area intersecciona con:</label><br>
-        <label>{ VALUE }</label><br><br>*/-->
-
-        <button type="button" onclick="ResetToMap();" class="btn btn-primary bg-color1 rounded-0">
-		    <i class="btn-has-text fa fa-step-backward"></i>
-		    Regresar al mapa
-	    </button>
-        <button type="button" onclick="ResetToMap();" class="btn btn-primary bg-color1 rounded-0">
-		    <i class="btn-has-text fa fa-file-pdf-o"></i>
-		    Generar informe PDF
-	    </button>
-    </div>
-</div>
-<script>
     function ResetToMap()
     {
-        $('#queryDiv').hide();
+        $('#areaDiv').hide();
         $('#mapDiv').show();
     }
 
-    displayLayout();
-    $('#queryDiv').hide();
+    function ExploreArea(FID)
+    {
+        $('#areaDiv').show();
+        $('#mapDiv').hide();
+
+        require([
+            "esri/Map",
+            "esri/views/MapView",
+            "esri/layers/Layer",
+            "esri/layers/FeatureLayer",
+            "esri/widgets/Search",
+            "esri/widgets/LayerList",
+            "esri/tasks/support/Query",
+        ],
+            function (Map, MapView, Layer, FeatureLayer, Search, LayerList, Query) {
+
+                
+                $('#values').html("Realizando consulta...");
+
+                var tuple = "";
+                var query = queryLayer.createQuery();
+
+                query.where = "FID = " + FID;
+                query.outFields = fieldsName;
+
+                queryLayer.queryFeatures(query)
+                .then(function(response){
+                    
+                    var fields = response.fields;
+                    var values = response.features[0].attributes;
+
+                    for (var i = 0; i < fields.length; i++) {
+                        if (values[fields[i].alias] != undefined && values[fields[i].alias] != 0) {
+                            tuple += "<h6><b>" + fieldsAlias[i] + ":</b> " + values[fields[i].alias] + "</h6>";
+                        }
+                        else
+                        {
+                            tuple += "<h6><b>" + fieldsAlias[i] + ":</b> Sin definir </h6>";
+                        }
+                    }
+
+                    $('#values').html(tuple);
+
+                });
+
+        });
+
+    }
 
     require([
         "esri/Map",
@@ -102,14 +129,14 @@
         "esri/layers/FeatureLayer",
         "esri/widgets/Search",
         "esri/widgets/LayerList",
+        "esri/tasks/support/Query",
         ],
-        function (Map, MapView, Layer, FeatureLayer, Search, LayerList) {
+        function (Map, MapView, Layer, FeatureLayer, Search, LayerList, Query)
+        {
 
-            
-            function dialogFunction(feature) {
-
+            function dialogFunction(feature)
+            {
                 var div = document.createElement("div");
-
                 for (i = 0; i < fieldsName.length; i++)
                 {
                     if (feature.graphic.attributes[fieldsName[i]] != undefined && feature.graphic.attributes[fieldsName[i]] != 0)
@@ -130,8 +157,9 @@
 					} 
                 }
                 ;
+
                 div.innerHTML += "<br>" + 
-                "<button onclick='queryFunction()' type='submit' class='btn btn-primary bg-color1 rounded-0'><i class='btn-has-text fa fa-search'></i>" +
+                "<button onclick='ExploreArea(" + feature.graphic.attributes["FID"] + ")' type='submit' class='btn btn-primary bg-color1 rounded-0'><i class='btn-has-text fa fa-search'></i>" +
                     "Consulta avanzada" + "<br>" + 
                 "</button>";
                 return div;
@@ -141,13 +169,10 @@
             basemap: "osm"
         });
 
-        var layersURL = [];
-        var layersName = [];
-
         @foreach (MapLayer mapLayer in Model.Layers) 
         {
-        @:layersURL.push("@Model.BaseUrl@mapLayer.URL");
-        @:layersName.push(decodeHtml("@mapLayer.Name"));
+            @:layersURL.push("@Model.BaseUrl@mapLayer.URL");
+            @:layersName.push(decodeHtml("@mapLayer.Name"));
         }
 
         layersURL.reverse();
@@ -155,15 +180,14 @@
 
 		// for each layer of the system, add layer
 		// add to the controls to switch beetwen layers
-        for (x = 0; x < layersURL.length; x++) {
+        for (currentLayer = 0; currentLayer < layersURL.length; currentLayer++) {
             var layer = new FeatureLayer({
-                url: layersURL[x],
+                url: layersURL[currentLayer],
                 outFields: ["*"]
             });
 
-            if (x == (layersURL.length - 1)) {
-                // Catastro layer is a "special one"..
-
+            if (layersName[currentLayer] == "@sapra.Controllers.SystemController.LoadSettings().BaseLayer")
+            {
                 var popupTemplate = {
                     // autocasts as new PopupTemplate()
                     title: "Información de esta ubicación",
@@ -184,9 +208,9 @@
                 };
 
                 layer.popupTemplate = popupTemplate;
-
             }
-
+            
+            queryLayer = layer;
             map.add(layer);
         }
 
@@ -262,5 +286,26 @@
         }); 
 
     });
-
 </script>
+<style>
+    .map {
+	    padding: 0;
+	    margin: 0;
+	    width: 100% !important;
+	    height: 100% !important;
+    }
+
+    .full {
+	    height: calc(100% - 56px);
+	    margin: 0 !important;
+    }
+
+	.esri-view .esri-view-surface--inset-outline:focus::after {
+		outline: none !important;
+	}
+
+	.esri-layer-list__item .esri-layer-list__item-container {
+		border: none !important;
+		outline: none !important;
+	}
+</style>

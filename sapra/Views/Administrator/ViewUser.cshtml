@@ -7,10 +7,8 @@
 	string Gender = "Masculino";
 	if (Model.UserInfo.Gender == GenderEnum.Female) { Gender = "Femenino"; }
 }
-
 <h4>Consultar información sobre un Usuario</h4><br>
 <div class="form-group yselect">
-
 	<div class="row">
 		<div class="col col-lg-6 col-md-12 col-sm-12 pb-4">
 
@@ -34,10 +32,8 @@
 				}
 				<label>@type - @phone.Number</label><br>
 			}
-
 		</div>
 		<div class="col col-lg-6 col-md-12 col-sm-12 pb-4">
-
 			<label class="font-weight-bolder">Rol del usuario:</label><br>
 			<label>@currentRole.Name</label><br><br>
 			<label class="font-weight-bolder">Sexo Biológico:</label><br>
@@ -46,12 +42,10 @@
 			<label>@Model.UserInfo.DateOfBirth.ToString().Split(" ", 2)[0]</label><br><br>	
 			<label class="font-weight-bolder">Dirección de Residencia:</label><br>
 			<label>@Model.UserInfo.Address</label><br><br>
-
 		</div>
 	</div>
 	<button class="btn btn-primary bg-color1 rounded-0" onclick="setTab('Users');">
 		<i class="btn-has-text fa fa-step-backward"></i>
 		Regresar
 	</button>
-
 </div>

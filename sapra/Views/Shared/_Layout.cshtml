@@ -1,7 +1,6 @@
 ﻿@{ 
 	var userId = sapra.Controllers.SessionController.GetSessionVariable(Context, "UserId");
-	var user   = sapra.Controllers.SystemController.RequestUser(userId, false);
-
+	var user   = sapra.Controllers.SystemController.RequestUser(userId, true);
 }
 <!DOCTYPE html>
 <html class="full" lang="en">
@@ -35,12 +34,14 @@
 				</button>
 				<div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
 					<ul class="nav navbar-nav ml-auto">
+						@if(userId > 0) 
+						{
 						<li class="nav-item">
-							<a class="nav-link text-white text-uppercase" asp-area="" asp-controller="Authorization" asp-action="Logout">
-								Bienvenido, @user.UserInfo.FirstName + @user.UserInfo.LastName
-								<i class="fa fa-address-card navbar-customIcon"></i>
+							<a class="nav-link text-white">
+								Bienvenido, @user.UserInfo.FirstName @user.UserInfo.LastName &emsp;
 							</a>
 						</li>
+						}
 						<li class="nav-item">
 							<a class="nav-link text-white text-uppercase" asp-area="" asp-controller="Authorization" asp-action="Logout">
 								Salir
@@ -52,7 +53,7 @@
 						@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.ACCESO_MAPA_ARCGIS))
 						{
 							<li class="nav-item">
-								<a class="nav-link text-white" asp-area="" asp-controller="Zone" asp-action="Map">Mapa ArcGIS</a>
+								<a class="nav-link text-white" asp-area="" asp-controller="Map" asp-action="MapView">Mapa ArcGIS</a>
 							</li>
 						}
 						@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.ACCESO_ADMINISTRACION))

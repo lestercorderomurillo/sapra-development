@@ -44,12 +44,13 @@ namespace sapra.Controllers
 			using var db = new DatabaseContext();
 
 			var user = db.UserRepository.Where(e => e.UserId == userId).SingleOrDefault();
-			if (includeExtraInformation)
+			if (userId > 0 && includeExtraInformation)
 			{
 				var userInfo = db.UserInfoRepository.Where(e => e.UserId == userId).SingleOrDefault();
 				var userPhones = db.UserPhoneRepository.Where(e => e.UserId == userId).ToList();
 				userInfo.PhoneNumbers = userPhones;
-				user.SetUserInfo(userId, userInfo);
+				user.UserInfo = userInfo;
+				user.UserInfo.UserId = userId;
 			}
 
 			return user;
@@ -60,14 +61,48 @@ namespace sapra.Controllers
 			using var db = new DatabaseContext();
 
 			var layer = db.MapLayerRepository.Where(e => e.MapLayerId == layerId).SingleOrDefault();
-
-			if (includeExtraInformation)
+			if (layerId > 0 && includeExtraInformation)
 			{
 				var fields = db.MapLayerFieldRepository.Where(e => e.MapLayerId == layerId).ToList();
 				layer.MapLayerFields = fields;
 			}
 			return layer;
+		}
 
+		[HttpPost]
+		public Role RequestRole(int roleId, bool includePermissions = false)
+		{
+			using var db = new DatabaseContext();
+
+			var role = db.RoleRepository.Where(e => e.RoleId == roleId).SingleOrDefault();
+			if (roleId > 0 && role != null)
+			{
+				if (includePermissions)
+				{
+					var permissions = new List<string>();
+
+					if (role.ParentRoleId != 0)
+					{
+						var parentRole = RequestRole(role.ParentRoleId, true);
+						permissions.AddRange(parentRole.Permissions);
+					}
+
+					var permissionsFromDb = db.RolePermissionRepository.Where(e => e.RoleId == roleId).Select(e => e.PermissionName).ToList();
+					permissions.AddRange(permissionsFromDb);
+
+					role.Permissions = permissions;
+				}
+				else
+				{
+					role.Permissions = new List<string>();
+				}
+			}
+			else
+			{
+				return null;
+			}
+
+			return role;
 		}
 
 		[HttpPost]
@@ -126,42 +161,7 @@ namespace sapra.Controllers
 			return usersComplex;
 		}
 
-		[HttpPost]
-		public Role RequestRole(int roleId, bool includePermissions = false)
-		{
-			using var db = new DatabaseContext();
-
-			var role = db.RoleRepository.Where(e => e.RoleId == roleId).SingleOrDefault();
-			if (role != null)
-			{
-				if (includePermissions)
-				{
-					var permissions = new List<string>();
-
-					if (role.ParentRoleId != 0)
-					{
-						var parentRole = RequestRole(role.ParentRoleId, true);
-						permissions.AddRange(parentRole.Permissions);
-					}
-
-					var permissionsFromDb = db.RolePermissionRepository.Where(e => e.RoleId == roleId).Select(e => e.PermissionName).ToList();
-					permissions.AddRange(permissionsFromDb);
-
-					role.Permissions = permissions;
-				}
-				else
-				{
-					role.Permissions = new List<string>();
-				}
-			}
-			else
-			{
-				return null;
-			}
-
-			return role;
-
-		}
+		
 
 		public ServerResponseViewModel GetResponseFromRedirect(ResponseType responseType = ResponseType.Success)
 		{
