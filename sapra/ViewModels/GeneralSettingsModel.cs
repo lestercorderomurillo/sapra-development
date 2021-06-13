@@ -1,5 +1,7 @@
 namespace sapra.ViewModels
 {
+
+	// JSON Model
 	public class GeneralSettingsModel : BaseViewModel
 	{
 		public string Title { get; set; }
@@ -10,11 +12,14 @@ namespace sapra.ViewModels
 
 		public string BaseLayer { get; set; }
 
+		public string SecondaryLayer { get; set; }
+
 		public GeneralSettingsModel()
 		{
 			Title = "Sistema de Administración";
 			Subtitle = "Plan Regulador de Alajuela";
 			BaseLayer = "Catastro";
+			SecondaryLayer = "Zonificación";
 			ArcGISURL = "http://www.google.com";
 		}
 	}

@@ -1,0 +1,77 @@
+﻿
+@model sapra.ViewModels.MapReportViewModel 
+@{
+	ViewData["Title"] = "Informe";
+}
+<script>
+
+    function queryFunction()
+    {
+        /*var query = mainLayer.createQuery();
+        query.where = "OBJECTID = " + OBJECTID;
+        query.outFields = ["A_M2", "PLANO"];*/
+
+       /* featureLayer.queryFeatures(query)
+            .then(function(response){
+                // returns a feature set with features containing the following attributes
+                // STATE_NAME, COUNTY_NAME, POPULATION, POP_DENSITY
+        });
+        */
+        /* $('#area-0').text(name);*/
+    }
+</script>
+<div class="text-center">
+    <img src="~/logo.png">
+	<div class="font-weight-bold">ACTIVIDAD DE CONTROL CONSTRUCTIVO</div>
+	Central telefónica 2436-2300. Telefax 2436-2332<br>
+	<a class="font-weight-bolder" href="http://www.munialajuela.go.cr">http://www.munialajuela.go.cr</a><br>
+
+	Trámite Número: @Model.Transaction<br>
+	<div class="font-weight-bold">Resolución Municipal de Constancia de Uso de Suelo</div><br>
+	
+	La persona @Model.User.UserInfo.FirstName @Model.User.UserInfo.LastName cuya cédula de identidad es @Model.User.UserInfo.Identity <br>
+    presentó la solicitud de Constancia de Uso de Suelo del siguiente inmueble, para desarrollar la actividad: <br>
+    
+    <br>
+    <h3>@Model.ActionStr</h3>
+    <br>
+    <div class="text-left w-100">
+        <div class="font-weight-bolder">Finca numero:</div> <div id="field_finca">[ERROR]</div>
+        <div class="font-weight-bolder">Plano catastrado numero:</div>  <div id="field_catastrado">[ERROR]</div>
+        <div class="font-weight-bolder">Distrito:</div>  <div id="field_distrito">[ERROR]</div>
+    </div>
+
+    De acuerdo con el Reglamento de Zonificación y Uso de Suelo del Plan Regulador Cantonal de Alajuela, publicado en <br>
+    La Gaceta N*200 del 23 de diciembre del ano 2021, el inmueble arriba indicado se encuenta en la zona definida como: <br>
+    
+    <br>
+    <div id="field_zona">[ERROR]</div><br>
+    <br>
+
+    En consecuencia, con la documentacion aportada, y siendo sometida a revision con base en el Reglamento de 
+    Zonificación y uso del suelo del plan regulador cantonal de alajuela y mapa asociado, el uso pretendido resulta:
+	
+    @if (Model.Accepted) 
+    {
+        <div>
+            PERMITIDO <br>
+            En el entendido que debera cumplir con:<br>
+            <img src="~/table-report.png"><br>
+        </div>
+	}else {
+        <div>
+            DENEGADO <br>
+            Debido a que el uso pretendido no se encuentra dentro de los usos conformes en la Zonificación según el Plan Regulador.<br>
+        </div>
+    }
+
+    <br>
+    <div class="text-left w-100">
+        Notifíquese:<br>
+        <img src="~/firm.png"><br>
+        Ing.Andrés Salas Vargas<br>
+        Actitivdad Control Constructivo<br>
+    </div>
+
+    
+</div> 

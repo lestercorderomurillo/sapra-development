@@ -6,31 +6,19 @@ using System.Threading.Tasks;
 
 namespace sapra.ViewModels
 {
-	public class MapShowcaseViewModel : BaseViewModel 
+
+	// Base ViewModel
+	public abstract class BaseViewModel
 	{
-		public int QueryFID;
+		public ServerResponseViewModel Response { get; set; }
 
-		public MapLayerField Fields;
-		public User User;
-		public string Transaction;
-		public string ActionStr; /*Vivienda*/
-		public String DateStr; /*Al ser las @DateTime.Now.ToShortTimeString() del dia @DateTime.Now.ToLongDateString()*/
-		public bool Accepted;
-
-	}
-
-	public class MapLayerListViewModel : BaseViewModel
-	{
-		public string BaseUrl { get; set; }
-
-		public List<MapLayer> Layers { get; set; }
-
-		public MapLayerListViewModel(List<MapLayer> layers)
+		public BaseViewModel()
 		{
-			Layers = layers;
+			Response = new ServerResponseViewModel();
 		}
 	}
 
+	// Listing Models
 	public class RoleListViewModel : BaseViewModel
 	{
 		public List<Role> Roles { get; set; }
@@ -52,6 +40,7 @@ namespace sapra.ViewModels
 		}
 	}
 
+	// Editing Models
 	public class UserEditViewModel : BaseViewModel
 	{
 		public User User { get; set; }

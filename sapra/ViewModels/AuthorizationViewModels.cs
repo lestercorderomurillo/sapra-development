@@ -7,15 +7,7 @@ using System.Threading.Tasks;
 namespace sapra.ViewModels
 {
 
-	public abstract class BaseViewModel 
-	{ 
-		public ServerResponseViewModel Response { get; set; }
-
-		public BaseViewModel() {
-			Response = new ServerResponseViewModel();
-		}
-	}
-
+	// Login and restore Passwords ViewModels
 	public class LoginViewModel : BaseViewModel
 	{
 		public string Email { get; set; }

@@ -53,7 +53,7 @@
 						@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.ACCESO_MAPA_ARCGIS))
 						{
 							<li class="nav-item">
-								<a class="nav-link text-white" asp-area="" asp-controller="Map" asp-action="MapView">Mapa ArcGIS</a>
+								<a class="nav-link text-white" asp-area="" asp-controller="Map" asp-action="MapExplorer">Mapa ArcGIS</a>
 							</li>
 						}
 						@if(sapra.Controllers.AuthorizationController.IsAllowed(sapra.Controllers.SessionController.GetSessionVariable(Context), Permission.ACCESO_ADMINISTRACION))

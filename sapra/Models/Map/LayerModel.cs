@@ -47,10 +47,5 @@ namespace sapra.Models
 
 		/**EF Reference**/
 		public MapLayer MapLayer { get; set; }
-
-		public static implicit operator MapLayerField(List<MapLayerField> v)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

@@ -6,10 +6,13 @@
 	<input asp-for="Title" type="text" class="form-control border-dark mw-450" value="@Model.Title"><br>
 	<label>Subtítulo del Sistema:</label><br>
 	<input asp-for="Subtitle" type="text" class="form-control border-dark mw-450" value="@Model.Subtitle"><br>
-	<label>Dirección URL de ArcGIS Server:</label><br>
+	<label>Dirección URL del servicio REST de ArcGIS Server:</label><br>
 	<input asp-for="ArcGISURL" type="text" class="form-control border-dark mw-450" value="@Model.ArcGISURL"><br>
-	<label>Nombre de la capa principal:</label><br>
+	<label class="small">Ejemplo: http://direccion:puerto/arcgis/rest/services/nombre_servicio/MapServer </label><br><br>
+	<label>Nombre de la capa de consulta:</label><br>
 	<input asp-for="BaseLayer" type="text" class="form-control border-dark mw-450" value="@Model.BaseLayer"><br>
+	<label>Nombre de la capa de intersección:</label><br>
+	<input asp-for="SecondaryLayer" type="text" class="form-control border-dark mw-450" value="@Model.SecondaryLayer"><br>
 	<button type="submit" class="btn btn-primary bg-color1 rounded-0">
 		<i class="btn-has-text fa fa-save"></i>
 		Guardar Cambios
@@ -38,6 +41,11 @@
 					required: true,
 					minlength: 4,
 					maxlength: 256
+				},
+				SecondaryLayer: {
+					required: true,
+					minlength: 4,
+					maxlength: 256
 				}
 			},
 		messages: {
@@ -45,6 +53,7 @@
 			Subtitle: "Debe tener entre 8 y 64 letras.",
 			ArcGISURL: "Debe ser una URL válida.",
 			BaseLayer: "Debe tener entre 4 y 256 letras.",
+			SecondaryLayer: "Debe tener entre 4 y 256 letras.",
 		},
 		submitHandler: function(form) {
 			form.submit();

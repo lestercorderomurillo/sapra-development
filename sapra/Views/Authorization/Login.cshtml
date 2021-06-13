@@ -7,7 +7,9 @@
 <div class="text-center row overflow-hidden">
 	<form method="post" enctype="multipart/form-data" asp-action="Login" asp-controller="Authorization" id="formLogin"
 	class="col col-12 col-sm-12 col-md-8 col-lg-8 col-xl-4 mx-auto bg-white rounded text-center">
-		<br><br><h5 class="text-secondary">@ViewBag.MainTitle</h5>
+		<br><br>
+		<img style="width:90px; height:90px;" src="~/logo.png"><br><br>
+		<h5 class="text-secondary">@ViewBag.MainTitle</h5>
 		<br><h4>@ViewBag.Subtitle</h4>
 		<div class="@Model.Response.GetResponseTypeStyle() rounded p-3 m-3 h6 alert-dismissible">
 			@Model.Response.Text

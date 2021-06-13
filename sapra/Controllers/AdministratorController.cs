@@ -87,7 +87,7 @@ namespace sapra.Controllers
 		public IActionResult TabLayers()
 		{
 			if (SessionController.GetSessionVariable(HttpContext) > 0) {
-				var model = new MapLayerListViewModel(RequestAllMapLayers(0, false))
+				var model = new MapExplorerViewModel(RequestAllMapLayers(0, false))
 				{
 					Response = GetResponseFromRedirect()
 				};
@@ -322,7 +322,7 @@ namespace sapra.Controllers
 				var layer = db.MapLayerRepository.Where(e => e.MapLayerId == mapLayerId).SingleOrDefault();
 				db.MapLayerRepository.Remove(layer);
 				db.SaveChanges();
-				var model = new MapLayerListViewModel(RequestAllMapLayers())
+				var model = new MapExplorerViewModel(RequestAllMapLayers(0, false))
 				{
 					Response = new ServerResponseViewModel("Se ha eliminado la capa correctamente. ", ResponseType.Success)
 				};

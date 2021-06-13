@@ -95,7 +95,7 @@ namespace sapra
 				endpoints.MapControllerRoute(
 					name: "Map",
 					pattern: "Map",
-					defaults: new { controller = "Map", action = "MapView" });
+					defaults: new { controller = "Map", action = "MapExplorer" });
 
 				endpoints.MapControllerRoute(
 					name: "Logout",
@@ -114,7 +114,7 @@ namespace sapra
 
 				endpoints.MapControllerRoute(
 					name: "default",
-					pattern: "{controller=Map}/{action=MapView}/{id?}");
+					pattern: "{controller=Map}/{action=MapExplorer}/{id?}");
 
 			});
 		}
